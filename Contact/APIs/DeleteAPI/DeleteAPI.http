@@ -1,0 +1,6 @@
+@DeleteAPI_HostAddress = http://localhost:5117
+
+GET {{DeleteAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

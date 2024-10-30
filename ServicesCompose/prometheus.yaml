@@ -1,0 +1,26 @@
+global:
+  scrape_interval: 15s
+scrape_configs:
+  - job_name: "contactcreateapi"
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["contactcreateapi:8080"]
+
+  - job_name: "contactdeleteapi"
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["contactdeleteapi:8082"]
+
+  - job_name: "contactreadapi"
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["contactreadapi:8083"]
+
+  - job_name: "contactupdateapi"
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["contactupdateapi:8084"]
+
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]

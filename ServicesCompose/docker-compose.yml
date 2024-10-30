@@ -1,0 +1,152 @@
+volumes:
+    prometheus_data_3: {}
+    grafana_data_3: {}
+    mssql_data_3: {}
+    rabbitmq_data_3: {}
+
+services:
+  rabbitmq:
+    container_name: rabbitmq-tech3
+    image: masstransit/rabbitmq:latest    
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - rabbitmq_data_3:/var/lib/rabbitmq 
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  contactcreateapi:
+    container_name: contactcreateapiv1-tech3    
+    image: contactcreateapiv1:latest
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "8000:8080"
+    depends_on:
+      - mysql-fiap  
+      - rabbitmq
+    extra_hosts:
+      - "host.docker.internal:host-gateway"   
+  
+  contactreadapi:
+    container_name: contactreadapiv1-tech3    
+    image: contactreadapiv1:latest
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "8003:8083"
+    depends_on:
+      - mysql-fiap  
+      - rabbitmq
+    extra_hosts:
+      - "host.docker.internal:host-gateway" 
+  
+  contactdeleteapi:
+    container_name: contactdeleteapiv1-tech3    
+    image: contactdeleteapiv1:latest
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "8002:8082"
+    depends_on:
+      - mysql-fiap  
+      - rabbitmq
+    extra_hosts:
+      - "host.docker.internal:host-gateway" 
+
+  contactupdateapi:
+    container_name: contactupdateapiv1-tech3    
+    image: contactupdateapiv1:latest
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "8004:8084"
+    depends_on:
+      - mysql-fiap  
+      - rabbitmq
+    extra_hosts:
+      - "host.docker.internal:host-gateway" 
+
+  mysql-fiap:
+    container_name: mysql-fiap-tech3    
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    volumes:
+      - mssql_data_3:/var/opt/mssql
+    environment:
+      - "ACCEPT_EULA=Y"
+      - "MSSQL_SA_PASSWORD=@Senha123"      
+    ports:
+      - "1433:1433"    
+
+  prometheus:
+    container_name: prometheus-tech3
+    image: prom/prometheus:latest  
+    volumes: 
+      - ./prometheus.yaml:/etc/prometheus/prometheus.yml
+      - prometheus_data_3:/prometheus
+    ports:
+      - "9090:9090" 
+    extra_hosts:
+      - "host.docker.internal:host-gateway"   
+
+  grafana: 
+    container_name: grafana-tech3
+    image: grafana/grafana:latest    
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data_3:/var/lib/grafana
+    ports: 
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+          
+  createworker:
+    container_name: createworker-tech3
+    image: createworkerv1
+    ports: 
+      - "8005:8085"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development    
+    restart: on-failure
+    depends_on:
+      - rabbitmq
+      - mysql-fiap 
+      - contactcreateapi   
+    extra_hosts:
+      - "host.docker.internal:host-gateway" 
+      
+  deleteworker:
+    container_name: deleteworker-tech3
+    image: deleteworkerv1
+    ports: 
+      - "8006:8086"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development    
+    restart: on-failure
+    depends_on:
+      - rabbitmq
+      - mysql-fiap 
+      - contactdeleteapi   
+    extra_hosts:
+      - "host.docker.internal:host-gateway" 
+
+  updateworker:
+    container_name: updateworker-tech3
+    image: updateworkerv1
+    ports: 
+      - "8007:8087"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development    
+    restart: on-failure
+    depends_on:
+      - rabbitmq
+      - mysql-fiap 
+      - contactupdateapi   
+    extra_hosts:
+      - "host.docker.internal:host-gateway" 
+
+  

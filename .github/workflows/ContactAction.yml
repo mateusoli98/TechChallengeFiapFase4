@@ -1,0 +1,85 @@
+name: Contacts
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+   
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.300
+
+    - name: Restore dependencies
+      run: cd Contact && dotnet restore
+      
+    - name: Build
+      run: cd Contact && dotnet build --no-restore
+ 
+    - name: Create Contact - Docker Build
+      run: docker build -t contactcreateapiv1:latest -f ./Contact/APIs/CreateAPI/Dockerfile .
+
+    - name: Delete Contact - Docker Build
+      run: docker build -t contactdeleteapiv1:latest -f ./Contact/APIs/DeleteAPI/Dockerfile .
+      
+    - name: Read Contact - Docker Build
+      run: docker build -t contactreadapiv1:latest -f ./Contact/APIs/ReadAPI/Dockerfile .
+    
+    - name: Update Contact - Docker Build
+      run: docker build -t contactupdateapiv1:latest -f ./Contact/APIs/UpdateAPI/Dockerfile .
+    
+    - name: Docker Build - Create Worker
+      run: docker build -t createworker-tech3:latest -f ./Contact/Workers/CreateWorker/Dockerfile .
+      
+    - name: Docker Build - Update Worker
+      run: docker build -t deleteworker-tech3:latest -f ./Contact/Workers/DeleteWorker/Dockerfile . 
+      
+    - name: Docker Build - Delete Worker
+      run: docker build -t updateworker-tech3:latest -f ./Contact/Workers/UpdateWorker/Dockerfile .
+      
+    - name: Docker Compose - All projects
+      run: cd ServicesCompose/ && docker compose --project-name techchallenge-3 up -d    
+      
+  unit_tests:
+     runs-on: ubuntu-latest
+     needs: build
+
+     steps:     
+      - uses: actions/checkout@v4
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.300
+          
+      - name: Restore dependencies
+        run: cd Contact/ && dotnet restore
+        
+      - name: Run Unit Tests
+        run: cd Contact/Tests/Unit && dotnet test --filter Unit
+        
+  integration_tests:
+     runs-on: ubuntu-latest
+     needs: unit_tests
+
+     steps:     
+      - uses: actions/checkout@v4
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.300
+          
+      - name: Restore dependencies
+        run: cd Contact/ && dotnet restore
+        
+      - name: Run Integration Tests
+        run: cd Contact/Tests/Integration && dotnet test --filter Integration
