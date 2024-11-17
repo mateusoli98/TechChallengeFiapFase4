@@ -1,16 +1,15 @@
-﻿using Domain.DomainObjects.Filters;
-using Domain.Entities;
-using Domain.Repositories.Relational;
-using Infra.Extensions;
-using Infra.Persistence.Sql.Context;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+using Infra.Persistence.Sql.Context;
+using Infra.Extensions;
+using Domain.Repositories.Relational;
+using Domain.DomainObjects.Filters;
+using Domain.Entities;
 
 namespace Infra.Persistence.Sql.Repositories;
 
 public class ContactRepository : IContactRepository
 {    
-    private readonly IServiceScopeFactory _scopeFactory;
     private DataContext _dataContext;
 
     public ContactRepository(IServiceScopeFactory scopeFactory)
@@ -48,8 +47,8 @@ public class ContactRepository : IContactRepository
         }
         catch (Exception ex)
         {
-
-        }        
+            //Logar erro
+        }
 
         return contact.Id;
     }
@@ -88,7 +87,28 @@ public class ContactRepository : IContactRepository
         }
         catch (Exception ex) 
         {
-        
+            //Logar erro
+        }
+    }
+
+    public async Task<bool> Exists(short areaCode, long phoneNumber, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var query = _dataContext.Contacts
+                .AsQueryable()
+                .Where(q => q.AreaCode == areaCode)
+                .Where(q => q.Phone == phoneNumber)
+                .Where(q => q.IsEnabled)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(cancellationToken);
+
+            return await query is null;
+        }
+        catch (Exception ex)
+        {
+            //Logar erro
+            return false;
         }
     }
 }

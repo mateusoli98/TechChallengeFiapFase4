@@ -1,59 +1,56 @@
-﻿//using Application.UseCases.DeleteContact;
-//using Application.UseCases.DeleteContact.Interfaces;
-//using Domain.Entities;
-//using Domain.Repositories.Relational;
-//using ErrorOr;
-//using FluentAssertions;
-//using Moq;
-//using Shared.Builders;
+﻿using Application.UseCases.DeleteContact.Interfaces;
+using Application.UseCases.DeleteContact;
+using Domain.Repositories.Relational;
+using Domain.Entities;
+using Shared.Builders;
+using FluentAssertions;
+using ErrorOr;
+using Moq;
 
-//namespace Unit.Application.Usecases;
+namespace Unit.Application.Usecases;
 
-//public class DeleteContactUseCaseTests
-//{
-//    private readonly Mock<IContactRepository> _mockContactRepository = new();
-//    private readonly IDeleteContactProcessingUseCase _useCase;
+public class DeleteContactUseCaseTests
+{
+    private readonly Mock<IContactRepository> _mockContactRepository = new();
+    private readonly IDeleteContactProcessingUseCase _useCase;
 
-//    public DeleteContactUseCaseTests()
-//    {
-//        _useCase = new SendDeleteContactRequestUseCase(_mockContactRepository.Object);
-//    }
+    public DeleteContactUseCaseTests()
+    {
+        _useCase = new DeleteContactProcessingUseCase(_mockContactRepository.Object);
+    }
 
-//    [Fact]
-//    public async Task ShouldDeleteContactWhenExists()
-//    {
-//        // Arrange
-//        int contactId = 1;
-//        var contact = new ContactBuilder().Build();
+    [Fact]
+    public async Task ShouldDeleteContactWhenExists()
+    {
+        // Arrange
+        var contactId = Guid.NewGuid().ToString();
+        var contact = new ContactBuilder().Build();
 
-//        _mockContactRepository.Setup(repo => repo.GetByIdAsync(contactId, default, true))
-//            .ReturnsAsync(contact);
+        _mockContactRepository.Setup(repo => repo.GetByIdAsync(contactId, default, true))
+            .ReturnsAsync(contact);
 
-//        // Act
-//        var result = await _useCase.Execute(contactId);
+        // Act
+        var result = await _useCase.Execute(contactId);
 
-//        // Assert
-//        result.Should().BeNull();
-//        _mockContactRepository.Verify(repo => repo.DeleteAsync(contact, default), Times.Once);
-//    }
+        // Assert
+        result.Should().BeNull();
+        _mockContactRepository.Verify(repo => repo.DeleteAsync(contact, default), Times.Once);
+    }
 
-//    [Fact]
-//    public async Task ShouldReturnErrorWhenContactNotFound()
-//    {
-//        // Arrange
-//        int contactId = 1;
+    [Fact]
+    public async Task ShouldReturnErrorWhenContactNotFound()
+    {
+        // Arrange
+        var contactId = Guid.NewGuid().ToString();
 
-//        _mockContactRepository.Setup(repo => repo.GetByIdAsync(contactId, default, true))
-//            .ReturnsAsync(() => null);
+        // Act
+        var result = await _useCase.Execute(contactId);
 
-//        // Act
-//        var result = await _useCase.Execute(contactId);
+        // Assert
+        result.Should().NotBeNull()
+            .And.BeOfType<Error>();
 
-//        // Assert
-//        result.Should().NotBeNull()
-//            .And.BeOfType<Error>();
-
-//        _mockContactRepository.Verify(repo => repo.DeleteAsync(It.IsAny<Contact>(), default), Times.Never);
-//    }
-//}
+        _mockContactRepository.Verify(repo => repo.DeleteAsync(It.IsAny<Contact>(), default), Times.Never);
+    }
+}
 

@@ -1,7 +1,8 @@
 ﻿using Application.UseCases.DeleteContact.Interfaces;
 using Application.UseCases.GetContact;
-using ErrorOr;
+using Infra.Services.Messages;
 using System.Text.Json;
+using ErrorOr;
 
 namespace Application.UseCases.DeleteContact;
 
@@ -9,7 +10,6 @@ public class SendDeleteContactRequestUseCase(IGetContactUseCase getContactUseCas
 {
     private readonly IGetContactUseCase _getContactUseCase = getContactUseCase;
     private readonly IRabbitMqProducerService _rabbitMqService = rabbitMqService;
-
 
     public async Task<Error?> Execute(string id, CancellationToken cancellationToken = default)
     {

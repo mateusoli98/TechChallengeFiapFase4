@@ -1,10 +1,9 @@
-﻿using Application;
-using Application.UseCases.CreateContact;
+﻿using Application.UseCases.CreateContact;
 using Application.UseCases.CreateContact.Interfaces;
 using Domain.Repositories.Relational;
 using Infra.Persistence.Sql.Context;
 using Infra.Persistence.Sql.Repositories;
-using MassTransit;
+using Infra.Services.Messages;
 using Microsoft.EntityFrameworkCore;
 
 

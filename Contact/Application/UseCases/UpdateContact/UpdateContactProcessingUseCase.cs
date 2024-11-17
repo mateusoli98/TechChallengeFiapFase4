@@ -1,7 +1,7 @@
 ﻿using Application.UseCases.UpdateContact.Interfaces;
-using CrossCutting.Utils;
-using Domain.Entities;
 using Domain.Repositories.Relational;
+using Domain.Entities;
+using CrossCutting.Utils;
 
 namespace Application.UseCases.UpdateContact;
 
@@ -15,15 +15,33 @@ public class UpdateContactProcessingUseCase(IContactRepository repository) : IUp
 
         if (contact is null)
         {
-            return;
+            throw new Exception("Contato não encontrado."); ;
         }
 
-        contact.Name = updatedContact.Name;
-        contact.Email = updatedContact.Email;
-        contact.AreaCode = updatedContact.AreaCode;
-        contact.Phone = updatedContact.Phone;
-        contact.State = AreaCodeDictionary.GetStateByAreaCode(updatedContact.AreaCode);
+        var alreadyExists = await Validate(contact, updatedContact, cancellationToken);
+        if (!alreadyExists)
+        {
+            contact.Name = updatedContact.Name;
+            contact.Email = updatedContact.Email;
+            contact.AreaCode = updatedContact.AreaCode;
+            contact.Phone = updatedContact.Phone;
+            contact.State = AreaCodeDictionary.GetStateByAreaCode(updatedContact.AreaCode);
 
-        await _contactRepository.UpdateAsync(contact, cancellationToken);
+            await _contactRepository.UpdateAsync(contact, cancellationToken);
+        }
+
+        throw new Exception("DDD + Telefone informado já está cadastrado no sistema.");
+    }
+
+    private async Task<bool> Validate(Contact findedContact, Contact updatedContact, CancellationToken cancellationToken)
+    {
+        if (updatedContact.Phone != findedContact.Phone || updatedContact.AreaCode != findedContact.AreaCode)
+        {
+            var alreadyExists = await _contactRepository.Exists(updatedContact.AreaCode, updatedContact.Phone, cancellationToken);
+
+            return alreadyExists;
+        }
+
+        return true;
     }
 }

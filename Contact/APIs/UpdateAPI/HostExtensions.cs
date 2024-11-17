@@ -1,10 +1,10 @@
-﻿using Application;
-using Application.UseCases.GetContact;
+﻿using Application.UseCases.GetContact;
 using Application.UseCases.UpdateContact;
 using Application.UseCases.UpdateContact.Interfaces;
 using Domain.Repositories.Relational;
 using Infra.Persistence.Sql.Context;
 using Infra.Persistence.Sql.Repositories;
+using Infra.Services.Messages;
 using Microsoft.EntityFrameworkCore;
 
 namespace UpdateAPI;

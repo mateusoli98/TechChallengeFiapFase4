@@ -1,10 +1,9 @@
 using Application.UseCases.UpdateContact.Interfaces;
-using Domain.Entities;
-using Domain.Repositories.Relational;
-using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using System.Text;
+using RabbitMQ.Client;
 using System.Text.Json;
+using System.Text;
+using Domain.Entities;
 
 namespace UpdateWorker
 {
@@ -34,29 +33,34 @@ namespace UpdateWorker
         }
 
 
-        public Task StartAsync(CancellationToken cancellationToken)
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
-            InitializeRabbitMQListener();
-
-            var consumer = new EventingBasicConsumer(_channel);
-            consumer.Received += (model, ea) =>
+            try
             {
-                var body = ea.Body.ToArray();
-                var message = Encoding.UTF8.GetString(body);
+                InitializeRabbitMQListener();
 
-                var contact = JsonSerializer.Deserialize<Contact>(message);
-                if (contact != null)
+                var consumer = new EventingBasicConsumer(_channel);
+                consumer.Received += (model, ea) =>
                 {
-                    contact.IsEnabled = true;
-                    _useCase.Execute(contact, cancellationToken);
-                }
-            };
+                    var body = ea.Body.ToArray();
+                    var message = Encoding.UTF8.GetString(body);
 
-            _channel.BasicConsume(queue: "update_contact",
-                                  autoAck: true,
-                                  consumer: consumer);
+                    var contact = JsonSerializer.Deserialize<Contact>(message);
+                    if (contact != null)
+                    {
+                        contact.IsEnabled = true;
+                        _useCase.Execute(contact, cancellationToken);
+                    }
+                };
 
-            return Task.CompletedTask;
+                _channel.BasicConsume(queue: "update_contact",
+                                      autoAck: true,
+                                      consumer: consumer);
+            }
+            catch (Exception ex)
+            {
+                //Logar erro
+            }
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

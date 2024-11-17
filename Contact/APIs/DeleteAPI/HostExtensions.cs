@@ -1,5 +1,4 @@
-﻿using Application;
-using Application.UseCases.DeleteContact;
+﻿using Application.UseCases.DeleteContact;
 using Application.UseCases.DeleteContact.Interfaces;
 using Application.UseCases.DeleteContactPermanently;
 using Application.UseCases.DeleteContactPermanently.Interfaces;
@@ -7,7 +6,7 @@ using Application.UseCases.GetContact;
 using Domain.Repositories.Relational;
 using Infra.Persistence.Sql.Context;
 using Infra.Persistence.Sql.Repositories;
-using MassTransit;
+using Infra.Services.Messages;
 using Microsoft.EntityFrameworkCore;
 
 namespace DeleteAPI;

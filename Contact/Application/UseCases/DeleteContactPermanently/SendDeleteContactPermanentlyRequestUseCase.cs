@@ -1,7 +1,8 @@
 ﻿using Application.UseCases.DeleteContactPermanently.Interfaces;
 using Application.UseCases.GetContact;
-using ErrorOr;
+using Infra.Services.Messages;
 using System.Text.Json;
+using ErrorOr;
 
 namespace Application.UseCases.DeleteContactPermanently;
 

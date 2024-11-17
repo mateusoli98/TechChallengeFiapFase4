@@ -1,5 +1,5 @@
-﻿using FluentValidation;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
+using FluentValidation;
 
 namespace Application.UseCases.CreateContact.Common
 {
@@ -8,8 +8,8 @@ namespace Application.UseCases.CreateContact.Common
         public CreateContactRequestValidator()
         {
             RuleFor(x => x.Name)
-            .NotEmpty().WithMessage("O nome é obrigatório.")
-            .Length(3, 100).WithMessage("O nome deve ter entre 3 e 100 caracteres.");
+                .NotEmpty().WithMessage("O nome é obrigatório.")
+                .Length(3, 100).WithMessage("O nome deve ter entre 3 e 100 caracteres.");
 
             RuleFor(x => x.AreaCode)
                 .NotEmpty().WithMessage("O DDD é obrigatório.")
