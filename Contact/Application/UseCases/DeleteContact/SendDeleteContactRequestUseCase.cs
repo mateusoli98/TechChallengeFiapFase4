@@ -21,6 +21,6 @@ public class SendDeleteContactRequestUseCase(IGetContactUseCase getContactUseCas
             return null;
         }
 
-        return Error.NotFound($"Contato com Id {id} não encontrado. Revise o Id informado ou tente novamente mais tarde");
+        return Error.Validation("NotFound", $"Contato com Id {id} não encontrado. Revise o Id informado ou tente novamente mais tarde");
     }
 }

@@ -1,15 +1,14 @@
-﻿using Application.UseCases.GetContact;
+﻿using Application.UseCases.UpdateContact.Common;
 using Application.UseCases.UpdateContact;
-using Application.UseCases.UpdateContact.Common;
-using Application.UseCases.UpdateContact.Interfaces;
+using Application.UseCases.GetContact;
 using Infra.Services.Messages;
+using Shared.Builders;
 using FluentValidation.TestHelper;
 using FluentAssertions;
-using Shared.Builders;
 using ErrorOr;
 using Moq;
 
-namespace Unit.Application.Usecases;
+namespace Unit.Application.Usecases.UpdateContact;
 
 public class SendUpdateContactUseCaseTests
 {
@@ -74,7 +73,8 @@ public class SendUpdateContactUseCaseTests
 
         // Assert
         result.IsError.Should().BeTrue();
-        result.FirstError.Type.Should().Be(Error.NotFound().Type);
+        result.FirstError.Type.Should().Be(Error.Validation().Type);
+        result.FirstError.Description.Should().Be($"Contato com id: {contactId} não encontrado. Revise o Id informado ou tente novamente mais tarde");
     }
 
 

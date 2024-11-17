@@ -42,6 +42,6 @@ public class SendUpdateContactRequestUseCase(IGetContactUseCase getContactUseCas
             };
         }
 
-        return Error.NotFound(description: $"Contato com id: {contactId} não encontrado. Revise o Id informado ou tente novamente mais tarde");
+        return Error.Validation("NotFound", $"Contato com id: {contactId} não encontrado. Revise o Id informado ou tente novamente mais tarde");
     }
 }

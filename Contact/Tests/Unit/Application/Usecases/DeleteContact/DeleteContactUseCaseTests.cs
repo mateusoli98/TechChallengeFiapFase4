@@ -7,7 +7,7 @@ using FluentAssertions;
 using ErrorOr;
 using Moq;
 
-namespace Unit.Application.Usecases;
+namespace Unit.Application.Usecases.DeleteContact;
 
 public class DeleteContactUseCaseTests
 {

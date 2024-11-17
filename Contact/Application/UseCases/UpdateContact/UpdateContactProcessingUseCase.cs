@@ -28,6 +28,7 @@ public class UpdateContactProcessingUseCase(IContactRepository repository) : IUp
             contact.State = AreaCodeDictionary.GetStateByAreaCode(updatedContact.AreaCode);
 
             await _contactRepository.UpdateAsync(contact, cancellationToken);
+            return;
         }
 
         throw new Exception("DDD + Telefone informado já está cadastrado no sistema.");

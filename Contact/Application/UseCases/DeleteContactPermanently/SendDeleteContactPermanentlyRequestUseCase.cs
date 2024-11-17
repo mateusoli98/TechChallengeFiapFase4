@@ -17,9 +17,10 @@ public class SendDeleteContactPermanentlyRequestUseCase(IGetContactUseCase getCo
 
         if (!contact.IsError)
         {
-            _rabbitMqService.SendMessage(JsonSerializer.Serialize(contact.Value.Id), "delete_permanently_contact");          
+            _rabbitMqService.SendMessage(JsonSerializer.Serialize(contact.Value.Id), "delete_permanently_contact");
+            return null;
         }
 
-        return Error.NotFound($"Contato com Id {id} não encontrado. Revise o Id informado ou tente novamente mais tarde");
+        return Error.Validation("NotFound", $"Contato com Id {id} não encontrado. Revise o Id informado ou tente novamente mais tarde");
     }
 }

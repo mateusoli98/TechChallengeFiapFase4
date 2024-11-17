@@ -6,7 +6,7 @@ using FluentAssertions;
 using Moq;
 using Shared.Builders;
 
-namespace Unit.Application.Usecases;
+namespace Unit.Application.Usecases.SearchContact;
 
 public class SearchContactUseCaseTests
 {

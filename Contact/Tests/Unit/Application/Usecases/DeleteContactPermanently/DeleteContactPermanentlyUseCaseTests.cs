@@ -1,11 +1,11 @@
 ﻿using Application.UseCases.DeleteContactPermanently;
 using Application.UseCases.DeleteContactPermanently.Interfaces;
 using Domain.Repositories.Relational;
+using FluentAssertions;
 using Shared.Builders;
 using Moq;
-using FluentAssertions;
 
-namespace Unit.Application.Usecases;
+namespace Unit.Application.Usecases.DeleteContactPermanently;
 
 public class DeleteContactPermanentlyUseCaseTests
 {

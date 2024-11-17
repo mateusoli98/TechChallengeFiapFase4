@@ -8,7 +8,7 @@ using FluentAssertions;
 using Shared.Builders;
 using Moq;
 
-namespace Unit.Application.Usecases;
+namespace Unit.Application.Usecases.CreateContact;
 
 public class SendCreateContacRequestUseCaseTests
 {

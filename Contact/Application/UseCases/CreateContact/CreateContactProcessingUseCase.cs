@@ -10,22 +10,14 @@ namespace Application.UseCases.CreateContact
 
         public async Task Execute(Contact contact, CancellationToken cancellationToken = default)
         {
-            try
+            var alreadyExists = await _contactRepository.Exists(contact.AreaCode, contact.Phone, cancellationToken);
+            if (!alreadyExists)
             {
-                var alreadyExists = await _contactRepository.Exists(contact.AreaCode, contact.Phone, cancellationToken);
-                if (!alreadyExists)
-                {
-                    await _contactRepository.SaveAsync(contact, cancellationToken);
-                    return;
-                }
-
-                throw new Exception("Telefone já cadastrado anteriormente no sistema.");
-
+                await _contactRepository.SaveAsync(contact, cancellationToken);
+                return;
             }
-            catch (Exception ex)
-            {
-                // Logar erro
-            }
+
+            throw new Exception("Telefone já cadastrado anteriormente no sistema.");
         }
     }
 }
