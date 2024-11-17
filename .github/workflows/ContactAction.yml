@@ -25,24 +25,31 @@ jobs:
       run: cd Contact && dotnet build --no-restore
  
     - name: Create Contact - Docker Build
+      working-directory: ./Contact
       run: docker build -t contactcreateapiv1:latest -f ./APIs/CreateAPI/Dockerfile .
 
     - name: Delete Contact - Docker Build
+      working-directory: ./Contact
       run: docker build -t contactdeleteapiv1:latest -f ./APIs/DeleteAPI/Dockerfile .
       
     - name: Read Contact - Docker Build
+      working-directory: ./Contact
       run: docker build -t contactreadapiv1:latest -f ./APIs/ReadAPI/Dockerfile .
     
     - name: Update Contact - Docker Build
+      working-directory: ./Contact
       run: docker build -t contactupdateapiv1:latest -f ./APIs/UpdateAPI/Dockerfile .
     
     - name: Docker Build - Create Worker
+      working-directory: ./Contact
       run: docker build -t createworker-tech3:latest -f ./Workers/CreateWorker/Dockerfile .
       
     - name: Docker Build - Update Worker
+      working-directory: ./Contact
       run: docker build -t deleteworker-tech3:latest -f ./Workers/DeleteWorker/Dockerfile . 
       
     - name: Docker Build - Delete Worker
+      working-directory: ./Contact
       run: docker build -t updateworker-tech3:latest -f ./Workers/UpdateWorker/Dockerfile .
       
     - name: Docker Compose - All projects
