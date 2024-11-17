@@ -25,25 +25,25 @@ jobs:
       run: cd Contact && dotnet build --no-restore
  
     - name: Create Contact - Docker Build
-      run: docker build -t contactcreateapiv1:latest -f ./Contact/APIs/CreateAPI/Dockerfile .
+      run: docker build -t contactcreateapiv1:latest -f ./APIs/CreateAPI/Dockerfile .
 
     - name: Delete Contact - Docker Build
-      run: docker build -t contactdeleteapiv1:latest -f ./Contact/APIs/DeleteAPI/Dockerfile .
+      run: docker build -t contactdeleteapiv1:latest -f ./APIs/DeleteAPI/Dockerfile .
       
     - name: Read Contact - Docker Build
-      run: docker build -t contactreadapiv1:latest -f ./Contact/APIs/ReadAPI/Dockerfile .
+      run: docker build -t contactreadapiv1:latest -f ./APIs/ReadAPI/Dockerfile .
     
     - name: Update Contact - Docker Build
-      run: docker build -t contactupdateapiv1:latest -f ./Contact/APIs/UpdateAPI/Dockerfile .
+      run: docker build -t contactupdateapiv1:latest -f ./APIs/UpdateAPI/Dockerfile .
     
     - name: Docker Build - Create Worker
-      run: docker build -t createworker-tech3:latest -f ./Contact/Workers/CreateWorker/Dockerfile .
+      run: docker build -t createworker-tech3:latest -f ./Workers/CreateWorker/Dockerfile .
       
     - name: Docker Build - Update Worker
-      run: docker build -t deleteworker-tech3:latest -f ./Contact/Workers/DeleteWorker/Dockerfile . 
+      run: docker build -t deleteworker-tech3:latest -f ./Workers/DeleteWorker/Dockerfile . 
       
     - name: Docker Build - Delete Worker
-      run: docker build -t updateworker-tech3:latest -f ./Contact/Workers/UpdateWorker/Dockerfile .
+      run: docker build -t updateworker-tech3:latest -f ./Workers/UpdateWorker/Dockerfile .
       
     - name: Docker Compose - All projects
       run: cd ServicesCompose/ && docker compose --project-name techchallenge-3 up -d    
