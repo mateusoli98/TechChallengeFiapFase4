@@ -1,0 +1,24 @@
+IntalacaoRabbitMQ 
+
+ helm repo add bitnami https://charts.bitnami.com/bitnami
+ helm repo update 
+ helm upgrade --install rabbitmq --set auth.username=guest --set auth.password=guest bitname/rabbitmq
+
+Credentials:
+    echo "Username      : guest"
+    echo "Password      : $(kubectl get secret --namespace default rabbitmq -o jsonpath="{.data.rabbitmq-password}" | base64 -d)"
+    echo "ErLang Cookie : $(kubectl get secret --namespace default rabbitmq -o jsonpath="{.data.rabbitmq-erlang-cookie}" | base64 -d)"
+
+ kubectl port-forward --namespace default svc/rabbitmq 5672:5672
+
+To Access the RabbitMQ AMQP port:
+
+    echo "URL : amqp://127.0.0.1:5672/"
+    kubectl port-forward --namespace default svc/rabbitmq 5672:5672
+
+To Access the RabbitMQ Management interface:
+
+    echo "URL : http://127.0.0.1:15672/"
+    kubectl port-forward --namespace default svc/rabbitmq 15672:15672
+
+para desinstalar: helm uninstall rabbitmq 
