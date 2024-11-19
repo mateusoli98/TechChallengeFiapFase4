@@ -3,11 +3,9 @@ using Application.UseCases.UpdateContact.Common;
 using Application.UseCases.UpdateContact.Interfaces;
 using CrossCutting.Extensions;
 using CrossCutting.Utils;
-using Domain.Entities;
-using ErrorOr;
-using System.Numerics;
 using System.Text.Json;
-using System.Xml.Linq;
+using ErrorOr;
+using Infra.Services.Messages;
 
 namespace Application.UseCases.UpdateContact;
 
@@ -44,6 +42,6 @@ public class SendUpdateContactRequestUseCase(IGetContactUseCase getContactUseCas
             };
         }
 
-        return Error.NotFound(description: $"Contato com id: {contactId} não encontrado. Revise o Id informado ou tente novamente mais tarde");
+        return Error.Validation("NotFound", $"Contato com id: {contactId} não encontrado. Revise o Id informado ou tente novamente mais tarde");
     }
 }

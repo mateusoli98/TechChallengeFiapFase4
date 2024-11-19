@@ -1,5 +1,5 @@
-﻿using Domain.DomainObjects.Filters;
-using Domain.Repositories.Relational;
+﻿using Domain.Repositories.Relational;
+using Domain.DomainObjects.Filters;
 using ErrorOr;
 
 namespace Application.UseCases.SearchContact;

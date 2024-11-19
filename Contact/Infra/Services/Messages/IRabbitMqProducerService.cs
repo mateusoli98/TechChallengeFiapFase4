@@ -1,4 +1,4 @@
-﻿namespace Application
+﻿namespace Infra.Services.Messages
 {
     public interface IRabbitMqProducerService
     {

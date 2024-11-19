@@ -1,6 +1,6 @@
 ﻿using Application.UseCases.CreateContact.Interfaces;
-using Domain.Entities;
 using Domain.Repositories.Relational;
+using Domain.Entities;
 
 namespace Application.UseCases.CreateContact
 {
@@ -10,14 +10,14 @@ namespace Application.UseCases.CreateContact
 
         public async Task Execute(Contact contact, CancellationToken cancellationToken = default)
         {
-            try
+            var alreadyExists = await _contactRepository.Exists(contact.AreaCode, contact.Phone, cancellationToken);
+            if (!alreadyExists)
             {
                 await _contactRepository.SaveAsync(contact, cancellationToken);
+                return;
             }
-            catch (Exception ex)
-            {
-                // Log?
-            }
+
+            throw new Exception("Telefone já cadastrado anteriormente no sistema.");
         }
     }
 }

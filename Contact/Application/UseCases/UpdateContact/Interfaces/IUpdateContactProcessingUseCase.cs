@@ -1,5 +1,4 @@
-﻿using Application.UseCases.UpdateContact.Common;
-using Domain.Entities;
+﻿using Domain.Entities;
 
 namespace Application.UseCases.UpdateContact.Interfaces;
 

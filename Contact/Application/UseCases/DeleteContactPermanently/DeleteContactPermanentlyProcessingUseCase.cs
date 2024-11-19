@@ -14,6 +14,9 @@ public class DeleteContactPermanentlyProcessingUseCase(IContactRepository contac
         if (contact is not null)
         {
             await contactRepository.PermanentDelete(contact, cancellationToken);
+            return;
         }
+
+        throw new Exception("Contato não encontrado.");
     }
 }
