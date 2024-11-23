@@ -21,7 +21,9 @@ spec:
           - name: ASPNETCORE_URLS
             value: http://*:8083
           #- name: SQL_SERVER_CONNECTION_STRING
-          #  value: "Server=mssql-nodeport,1433;Database=ContactDB;User=sa;Password=@Senha123;MultipleActiveResultSets=true;TrustServerCertificate=True;"     
+          #  value: "Server=mssql-nodeport,1433;Database=ContactDB;User=sa;Password=@Senha123;MultipleActiveResultSets=true;TrustServerCertificate=True;"   
+          - name: DB_CONNECTIONSTRING
+            value: Server=mssql-nodeport.default.svc.cluster.local,1433;Database=ContactDB;User Id=sa;Password=@Senha123;Encrypt=False;
         resources:
           limits:
             memory: "128Mi"

@@ -15,11 +15,13 @@ namespace CreateWorker
 
         private void InitializeRabbitMQListener()
         {
+            Console.WriteLine("Iniciando conexão com RabbitMQ");
             var factory = new ConnectionFactory
             {
-                HostName = "host.docker.internal",
-                UserName = "guest",
-                Password = "guest"              
+                HostName = Environment.GetEnvironmentVariable("RABBITMQ_HOST"),
+                Port = int.Parse(Environment.GetEnvironmentVariable("RABBITMQ_PORT")),
+                UserName = Environment.GetEnvironmentVariable("RABBITMQ_USER"),
+                Password = Environment.GetEnvironmentVariable("RABBITMQ_PASS")
             };
 
             _connection = factory.CreateConnection();
@@ -44,6 +46,7 @@ namespace CreateWorker
                 var message = Encoding.UTF8.GetString(body);
 
                 var contact = JsonSerializer.Deserialize<Contact>(message);
+                Console.WriteLine($"Iniciando processamento do usuário '{contact.Id}'");
 
                 if (contact != null)
                 {

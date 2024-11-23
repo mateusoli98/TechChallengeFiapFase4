@@ -50,7 +50,7 @@ public static class HostExtensions
     {
         services.AddDbContext<DataContext>(options =>
         {
-            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+            options.UseSqlServer(Environment.GetEnvironmentVariable("DB_CONNECTIONSTRING"));
         });
 
         services.AddScoped<IContactRepository, ContactRepository>();

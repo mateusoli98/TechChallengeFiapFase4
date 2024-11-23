@@ -17,7 +17,7 @@ public class DataContextFactory : IDesignTimeDbContextFactory<DataContext>
             .Build();
 
         var optionsBuilder = new DbContextOptionsBuilder<DataContext>();
-        var connectionString = configuration.GetConnectionString("DefaultConnection");
+        var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTIONSTRING");
 
         optionsBuilder.EnableSensitiveDataLogging();
         optionsBuilder.UseSqlServer(connectionString);

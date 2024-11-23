@@ -9,9 +9,10 @@ public class RabbitMqProducerService() : IRabbitMqProducerService
     {
         var factory = new ConnectionFactory()
         {
-            HostName = "host.docker.internal",
-            UserName = "guest",
-            Password = "guest",
+            HostName = Environment.GetEnvironmentVariable("RABBITMQ_HOST"),
+            Port = int.Parse(Environment.GetEnvironmentVariable("RABBITMQ_PORT")),
+            UserName = Environment.GetEnvironmentVariable("RABBITMQ_USER"),
+            Password = Environment.GetEnvironmentVariable("RABBITMQ_PASS")
         };
 
         using (var connection = factory.CreateConnection())

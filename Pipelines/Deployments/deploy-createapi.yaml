@@ -19,7 +19,7 @@ spec:
         imagePullPolicy: Never
         env: 
           - name: RABBITMQ_HOST
-            value: host.docker.internal
+            value: rabbitmq.default.svc.cluster.local
           - name: ASPNETCORE_URLS
             value: http://*:8080         
           - name: RABBITMQ_PORT
@@ -27,7 +27,9 @@ spec:
           - name: RABBITMQ_USER
             value: guest
           - name: RABBITMQ_PASS
-            value: guest         
+            value: guest   
+          - name: BD_CONNECTION_STRING
+            value: Server=mssql-nodeport,1433;Database=ContactDB;User=sa;Password=@Senha123;MultipleActiveResultSets=true;TrustServerCertificate=True;
         resources:
           limits:
             memory: "128Mi"
