@@ -18,8 +18,8 @@ spec:
         image: contactcreateapiv1:latest
         imagePullPolicy: Never
         env: 
-          #- name: RABBITMQ_HOST
-          #  value: host.docker.internal
+          - name: RABBITMQ_HOST
+            value: host.docker.internal
           - name: ASPNETCORE_URLS
             value: http://*:8080         
           - name: RABBITMQ_PORT

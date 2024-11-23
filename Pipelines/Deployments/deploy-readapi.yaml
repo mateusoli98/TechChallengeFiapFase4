@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: readapi
+spec:
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: /metrics
+        prometheus.io/port: "8083"
+      labels:
+        app: label-readapi
+    spec:
+      containers:
+      - name: cont-readapi
+        image: contactreadapiv1:latest
+        imagePullPolicy: Never
+        env:
+          - name: ASPNETCORE_URLS
+            value: http://*:8083
+          #- name: SQL_SERVER_CONNECTION_STRING
+          #  value: "Server=mssql-nodeport,1433;Database=ContactDB;User=sa;Password=@Senha123;MultipleActiveResultSets=true;TrustServerCertificate=True;"     
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8083
+  selector:
+    matchLabels:
+      app: label-readapi
