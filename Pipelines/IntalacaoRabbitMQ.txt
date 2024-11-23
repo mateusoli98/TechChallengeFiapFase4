@@ -2,7 +2,7 @@ IntalacaoRabbitMQ
 
  helm repo add bitnami https://charts.bitnami.com/bitnami
  helm repo update 
- helm upgrade --install rabbitmq --set auth.username=guest --set auth.password=guest bitname/rabbitmq
+ helm upgrade --install rabbitmq --set auth.username=guest --set auth.password=guest bitnami/rabbitmq
 
 Credentials:
     echo "Username      : guest"
