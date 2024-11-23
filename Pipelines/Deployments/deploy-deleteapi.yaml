@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: updateapi
+  name: deleteapi
 spec:
   replicas: 1
   template:
@@ -9,13 +9,13 @@ spec:
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/path: /metrics
-        prometheus.io/port: "8084"
+        prometheus.io/port: "8082"
       labels:
-        app: label-updateapi
+        app: label-deleteapi
     spec:
       containers:
-        - name: cont-updateapi
-          image: contactupdateapiv1:latest
+        - name: cont-deleteapi
+          image: contactdeleteapiv1:latest
           imagePullPolicy: Never
           envFrom:
               - secretRef:
@@ -28,13 +28,13 @@ spec:
                   name: config-database
           env:
               - name: ASPNETCORE_URLS
-                value: http://*:8084
+                value: http://*:8082
           resources:
             limits:
               memory: "128Mi"
               cpu: "500m"
           ports:
-            - containerPort: 8084
+            - containerPort: 8082
   selector:
     matchLabels:
-      app: label-updateapi
+      app: label-deleteapi

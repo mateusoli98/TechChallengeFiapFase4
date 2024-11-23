@@ -1,36 +1,38 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: readapi
+  name: deleteworker
+  annotations:
+    description: "Deployment para o WORKER de Cria��o"
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: label-deleteworker
   template:
     metadata:
-      annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/path: /metrics
-        prometheus.io/port: "8083"
       labels:
-        app: label-readapi
+        app: label-deleteworker
     spec:
       containers:
-      - name: cont-readapi
-        image: contactreadapiv1:latest
+      - name: cont-deleteworker
+        image: deleteworkerv1:latest
         imagePullPolicy: Never
         envFrom:
             - secretRef:
                 name: database-secrets
+            - secretRef:
+                name: rabbitmq-secrets
+            - configMapRef:
+                name: config-rabbitmq
             - configMapRef:
                 name: config-database
         env:
             - name: ASPNETCORE_URLS
-              value: http://*:8083
+              value: http://*:8086
         resources:
           limits:
             memory: "128Mi"
             cpu: "500m"
         ports:
-        - containerPort: 8083
-  selector:
-    matchLabels:
-      app: label-readapi
+        - containerPort: 8086
