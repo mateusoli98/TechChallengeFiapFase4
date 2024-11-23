@@ -56,7 +56,7 @@ public static class HostExtensions
     {
         services.AddDbContext<DataContext>(options =>
         {
-            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+            options.UseSqlServer(Environment.GetEnvironmentVariable("DB_CONNECTIONSTRING"));
         });
 
         services.AddScoped<IContactRepository, ContactRepository>();
@@ -66,25 +66,6 @@ public static class HostExtensions
 
     public static IServiceCollection AddRabbitMQService(this IServiceCollection services, IConfiguration configuration)
     {
-
-        //var server = configuration.GetSection("MassTransit")["Server"] ?? string.Empty;
-        //var user = configuration.GetSection("MassTransit")["User"] ?? string.Empty;
-        //var password = configuration.GetSection("MassTransit")["Password"] ?? string.Empty;
-
-        //services.AddMassTransit(busConfigurator =>
-        //{
-        //    busConfigurator.UsingRabbitMq((ctx, cfg) =>
-        //    {
-        //        cfg.Host(new Uri(server), host =>
-        //        {
-        //            host.Username(user);
-        //            host.Password(password);
-        //        });
-
-        //        cfg.ConfigureEndpoints(ctx);
-        //    });
-        //});
-
         services.AddScoped<IRabbitMqProducerService, RabbitMqProducerService>();
 
         return services;

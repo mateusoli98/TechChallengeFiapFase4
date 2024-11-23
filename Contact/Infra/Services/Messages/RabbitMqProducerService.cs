@@ -10,7 +10,7 @@ public class RabbitMqProducerService() : IRabbitMqProducerService
         var factory = new ConnectionFactory()
         {
             HostName = Environment.GetEnvironmentVariable("RABBITMQ_HOST"),
-            Port = int.Parse(Environment.GetEnvironmentVariable("RABBITMQ_PORT")),
+            Port = int.Parse(Environment.GetEnvironmentVariable("RABBITMQ_PORT") ?? "80"),
             UserName = Environment.GetEnvironmentVariable("RABBITMQ_USER"),
             Password = Environment.GetEnvironmentVariable("RABBITMQ_PASS")
         };
