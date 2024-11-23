@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: createapi
+  name: updateapi
 spec:
   replicas: 1
   template:
@@ -11,11 +11,11 @@ spec:
         prometheus.io/path: /metrics
         prometheus.io/port: "8084"
       labels:
-        app: label-createapi
+        app: label-updateapi
     spec:
       containers:
-        - name: cont-createapi
-          image: contactcreateapiv1:latest
+        - name: cont-updateapi
+          image: contactupdateapiv1:latest
           imagePullPolicy: Never
           env:
             - name: RABBITMQ_HOST
@@ -38,4 +38,4 @@ spec:
             - containerPort: 8084
   selector:
     matchLabels:
-      app: label-createapi
+      app: label-updateapi
