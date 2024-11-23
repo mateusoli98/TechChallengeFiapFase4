@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: createapi
+spec:
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: /metrics
+        prometheus.io/port: "8084"
+      labels:
+        app: label-createapi
+    spec:
+      containers:
+        - name: cont-createapi
+          image: contactcreateapiv1:latest
+          imagePullPolicy: Never
+          env:
+            - name: RABBITMQ_HOST
+              value: rabbitmq.default.svc.cluster.local
+            - name: ASPNETCORE_URLS
+              value: http://*:8084
+            - name: RABBITMQ_PORT
+              value: "5672"
+            - name: RABBITMQ_USER
+              value: guest
+            - name: RABBITMQ_PASS
+              value: guest
+            - name: BD_CONNECTION_STRING
+              value: Server=mssql-nodeport,1433;Database=ContactDB;User=sa;Password=@Senha123;MultipleActiveResultSets=true;TrustServerCertificate=True;
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 8084
+  selector:
+    matchLabels:
+      app: label-createapi
