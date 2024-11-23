@@ -18,6 +18,8 @@ spec:
           ports:
             - containerPort: 1433
           envFrom:
+            - secretRef:
+                name: database-secrets
             - configMapRef:
                 name: config-database            
           resources:

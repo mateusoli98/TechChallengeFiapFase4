@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: createapi
+  annotations:
+    description: "Deployment para a API de Criação"
 spec:
   replicas: 1
   template:
@@ -18,6 +20,10 @@ spec:
         image: contactcreateapiv1:latest
         imagePullPolicy: Never
         envFrom:
+            - secretRef:
+                name: database-secrets
+            - secretRef:
+                name: rabbitmq-secrets
             - configMapRef:
                 name: config-rabbitmq
             - configMapRef:

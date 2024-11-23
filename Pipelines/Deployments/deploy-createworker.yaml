@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: createworker
+  annotations:
+    description: "Deployment para o WORKER de Criação"
 spec:
   replicas: 1
   selector:
@@ -17,6 +19,10 @@ spec:
         image: createworkerv1:latest
         imagePullPolicy: Never
         envFrom:
+            - secretRef:
+                name: database-secrets
+            - secretRef:
+                name: rabbitmq-secrets
             - configMapRef:
                 name: config-rabbitmq
             - configMapRef:

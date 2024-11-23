@@ -2,8 +2,9 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: config-database
+  annotations:
+    description: "Configurações do banco de dados MySQL"
 data:
-  DB_CONNECTIONSTRING: Server=mssql-nodeport.default.svc.cluster.local,1433;Database=ContactDB;User Id=sa;Password=@Senha123;Encrypt=False;
   MSSQL_PID: "Express"
   ACCEPT_EULA: "Y"
-  SA_PASSWORD: "@Senha123"
+
