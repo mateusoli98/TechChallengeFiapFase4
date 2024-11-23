@@ -17,13 +17,9 @@ spec:
           image: mcr.microsoft.com/mssql/server:2022-latest
           ports:
             - containerPort: 1433
-          env:
-            - name: MSSQL_PID
-              value: "Express"
-            - name: ACCEPT_EULA
-              value: "Y"
-            - name: SA_PASSWORD
-              value: "@Senha123"
+          envFrom:
+            - configMapRef:
+                name: config-database            
           resources:
             requests:
               memory: "2Gi"

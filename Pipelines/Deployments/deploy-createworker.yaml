@@ -16,19 +16,14 @@ spec:
       - name: cont-createworker
         image: createworkerv1:latest
         imagePullPolicy: Never
-        env:          
-          - name: RABBITMQ_HOST
-            value: rabbitmq.default.svc.cluster.local
-          - name: ASPNETCORE_URLS
-            value: http://*:8085
-          - name: RABBITMQ_PORT
-            value: "5672"
-          - name: RABBITMQ_USER
-            value: guest
-          - name: RABBITMQ_PASS
-            value: guest
-          - name: DB_CONNECTIONSTRING
-            value: Server=mssql-nodeport.default.svc.cluster.local,1433;Database=ContactDB;User Id=sa;Password=@Senha123;Encrypt=False;
+        envFrom:
+            - configMapRef:
+                name: config-rabbitmq
+            - configMapRef:
+                name: config-database
+        env:
+            - name: ASPNETCORE_URLS
+              value: http://*:8085
         resources:
           limits:
             memory: "128Mi"
