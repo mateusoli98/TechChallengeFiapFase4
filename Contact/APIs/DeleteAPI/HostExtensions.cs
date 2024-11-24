@@ -1,13 +1,14 @@
-﻿using Application.UseCases.DeleteContact;
+﻿using Microsoft.EntityFrameworkCore;
+using Application.UseCases.DeleteContact;
 using Application.UseCases.DeleteContact.Interfaces;
 using Application.UseCases.DeleteContactPermanently;
 using Application.UseCases.DeleteContactPermanently.Interfaces;
 using Application.UseCases.GetContact;
 using Domain.Repositories.Relational;
-using Infra.Persistence.Sql.Context;
 using Infra.Persistence.Sql.Repositories;
+using Infra.Persistence.Sql.Context;
 using Infra.Services.Messages;
-using Microsoft.EntityFrameworkCore;
+using Infra.Extensions;
 
 namespace DeleteAPI;
 
@@ -23,6 +24,10 @@ public static class HostExtensions
         builder.Services.AddRepositories(builder.Configuration);
         builder.Services.AddUseCases();
 
+        builder.Services.AddRabbitMQHealthChecks();
+        builder.Services.AddSQLHealthChecks();
+        builder.Services.AddCustomOpenTelemetry();
+
         return builder;
     }
 
@@ -35,10 +40,11 @@ public static class HostExtensions
         }
 
         app.UseHttpsRedirection();
-
         app.UseAuthorization();
-
+        app.UseOpenTelemetryPrometheusScrapingEndpoint();
         app.MapControllers();
+        app.MapHealthChecks("/health");
+        app.MapCustomHealthChecksEndpoints();
 
         return app;
     }

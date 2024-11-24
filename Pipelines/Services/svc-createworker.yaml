@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: svc-createworker
   annotations:
-    description: "Servi�o para expor o WORKER de Cria��o dentro do cluster para os demais pods"
+    description: "Servico para expor o WORKER de criacao dentro do cluster para os demais pods"
 spec:
   type: NodePort
   selector:

@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: config-rabbitmq
   annotations:
-    description: "Configurações não sensívies para conexão com o RabbitMQ"
+    description: "Configuracoes nao sensiveis para conexao com o RabbitMQ"
 data:
   RABBITMQ_HOST: rabbitmq.default.svc.cluster.local
   RABBITMQ_PORT: "5672"

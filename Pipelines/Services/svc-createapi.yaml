@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: svc-createapi
   annotations:
-    description: "Servi�� para expor a API de Cria��o para fora do cluster"
+    description: "Servico para expor a API de Criacao para fora do cluster"
 spec:
   type: NodePort
   selector:

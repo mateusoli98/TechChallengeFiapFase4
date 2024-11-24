@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mssql-deploy
+  annotations:
+    description: "Deployment para criar o banco de dados dentro do cluster"
 spec:
   replicas: 1
   selector:

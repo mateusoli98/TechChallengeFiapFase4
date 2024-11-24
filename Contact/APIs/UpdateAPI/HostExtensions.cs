@@ -1,11 +1,12 @@
 ﻿using Application.UseCases.GetContact;
 using Application.UseCases.UpdateContact;
 using Application.UseCases.UpdateContact.Interfaces;
-using Domain.Repositories.Relational;
-using Infra.Persistence.Sql.Context;
-using Infra.Persistence.Sql.Repositories;
-using Infra.Services.Messages;
 using Microsoft.EntityFrameworkCore;
+using Domain.Repositories.Relational;
+using Infra.Persistence.Sql.Repositories;
+using Infra.Persistence.Sql.Context;
+using Infra.Services.Messages;
+using Infra.Extensions;
 
 namespace UpdateAPI;
 
@@ -21,6 +22,10 @@ public static class HostExtensions
         builder.Services.AddRepositories(builder.Configuration);
         builder.Services.AddUseCases();
 
+        builder.Services.AddRabbitMQHealthChecks();
+        builder.Services.AddSQLHealthChecks();
+        builder.Services.AddCustomOpenTelemetry();
+
         return builder;
     }
 
@@ -33,10 +38,11 @@ public static class HostExtensions
         }
 
         app.UseHttpsRedirection();
-
         app.UseAuthorization();
-
+        app.UseOpenTelemetryPrometheusScrapingEndpoint();
         app.MapControllers();
+        app.MapHealthChecks("/health");
+        app.MapCustomHealthChecksEndpoints();
 
         return app;
     }

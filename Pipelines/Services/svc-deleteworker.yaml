@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: svc-deleteworker
   annotations:
-    description: "Servi�o para expor o WORKER de Cria��o dentro do cluster para os demais pods"
+    description: "Servico para expor o WORKER de Criacao dentro do cluster para os demais pods"
 spec:
   type: NodePort
   selector:

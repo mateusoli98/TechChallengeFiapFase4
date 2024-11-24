@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: deleteworker
   annotations:
-    description: "Deployment para o WORKER de Cria��o"
+    description: "Deployment para o WORKER de Delecao"
 spec:
   replicas: 1
   selector:

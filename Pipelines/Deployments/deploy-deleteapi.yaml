@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: deleteapi
+  annotations:
+    description: "Deployment para a API de delecao"
 spec:
   replicas: 1
   template:

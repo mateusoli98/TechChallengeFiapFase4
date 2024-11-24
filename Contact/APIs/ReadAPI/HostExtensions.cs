@@ -1,9 +1,10 @@
-﻿using Application.UseCases.GetContact;
-using Application.UseCases.SearchContact;
+﻿using Microsoft.EntityFrameworkCore;
 using Domain.Repositories.Relational;
-using Infra.Persistence.Sql.Context;
+using Application.UseCases.GetContact;
+using Application.UseCases.SearchContact;
 using Infra.Persistence.Sql.Repositories;
-using Microsoft.EntityFrameworkCore;
+using Infra.Persistence.Sql.Context;
+using Infra.Extensions;
 
 namespace ReadAPI;
 
@@ -18,6 +19,9 @@ public static class HostExtensions
         builder.Services.AddRepositories(builder.Configuration);
         builder.Services.AddUseCases();
 
+        builder.Services.AddSQLHealthChecks();
+        builder.Services.AddCustomOpenTelemetry();
+
         return builder;
     }
 
@@ -30,10 +34,11 @@ public static class HostExtensions
         }
 
         app.UseHttpsRedirection();
-
         app.UseAuthorization();
-
+        app.UseOpenTelemetryPrometheusScrapingEndpoint();
         app.MapControllers();
+        app.MapHealthChecks("/health");
+        app.MapCustomHealthChecksEndpoints();
 
         return app;
     }

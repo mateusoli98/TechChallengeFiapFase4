@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: createapi
   annotations:
-    description: "Deployment para a API de Criação"
+    description: "Deployment para a API de Criacao"
 spec:
   replicas: 1
   template:

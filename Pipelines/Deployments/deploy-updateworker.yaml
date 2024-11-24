@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: updateworker
   annotations:
-    description: "Deployment para o WORKER de Cria��o"
+    description: "Deployment para o WORKER de Criacao"
 spec:
   replicas: 1
   selector:
