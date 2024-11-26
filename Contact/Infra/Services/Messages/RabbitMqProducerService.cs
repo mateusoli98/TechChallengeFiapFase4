@@ -3,9 +3,12 @@ using System.Text;
 
 namespace Infra.Services.Messages;
 
-public class RabbitMqProducerService() : IRabbitMqProducerService
-{       
-    public void SendMessage(string message, string queueName)
+public class RabbitMqProducerService : IRabbitMqProducerService
+{
+    private readonly IConnection _connection;
+    private readonly IModel _channel;
+
+    public RabbitMqProducerService()
     {
         var factory = new ConnectionFactory()
         {
@@ -15,27 +18,43 @@ public class RabbitMqProducerService() : IRabbitMqProducerService
             Password = Environment.GetEnvironmentVariable("RABBITMQ_PASS")
         };
 
-        using (var connection = factory.CreateConnection())
-        {
-            using (var channel = connection.CreateModel())
-            {
-                channel.QueueDeclare(
-                    queue: queueName,
-                    durable: false,
-                    exclusive: false,
-                    autoDelete: false,
-                    arguments: null
-                );
+        _connection = factory.CreateConnection();
+        _channel = _connection.CreateModel();
+    }
 
-                var body = Encoding.UTF8.GetBytes(message);
+    public void SendMessage(string message, string queueName)
+    {
+        DeclareQueue(queueName);
 
-                channel.BasicPublish(
-                    exchange: "",
-                    routingKey: queueName,
-                    basicProperties: null,
-                    body: body
-                );
-            }
-        };
+        var body = Encoding.UTF8.GetBytes(message);
+
+        _channel.BasicPublish(
+            exchange: "",
+            routingKey: queueName,
+            basicProperties: null,
+            body: body
+        );
+    }
+
+    public void DeclareQueue(string queueName)
+    {
+        _channel.QueueDeclare(
+            queue: queueName,
+            durable: false,
+            exclusive: false,
+            autoDelete: false,
+            arguments: null
+        );
+    }
+
+    public (IConnection, IModel) GetConnectionAndChannel()
+    {
+        return (_connection, _channel);
+    }
+
+    public void Dispose()
+    {
+        _channel.Close();
+        _connection.Close();
     }
 }

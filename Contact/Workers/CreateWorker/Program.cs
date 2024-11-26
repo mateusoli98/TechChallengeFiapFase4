@@ -1,8 +1,10 @@
 using Application.UseCases.CreateContact;
 using Application.UseCases.CreateContact.Interfaces;
 using Domain.Repositories.Relational;
+using Infra.Migrations;
 using Infra.Persistence.Sql.Context;
 using Infra.Persistence.Sql.Repositories;
+using Infra.Services.Messages;
 using Microsoft.EntityFrameworkCore;
 
 namespace CreateWorker
@@ -23,29 +25,12 @@ namespace CreateWorker
 
             builder.Services.AddSingleton<IContactRepository, ContactRepository>();
             builder.Services.AddSingleton<ICreateContactProcessingUseCase, CreateContactProcessingUseCase>();
+            builder.Services.AddSingleton<IRabbitMqProducerService, RabbitMqProducerService>();
             builder.Services.AddHostedService<Worker>();
 
             var host = builder.Build();
-            ApplyMigrations(host);
+            MigrationHelper.ApplyMigrations<DataContext>(host);
             host.Run();
-        }
-
-        private static void ApplyMigrations(IHost host)
-        {
-            using (var scope = host.Services.CreateScope())
-            {
-                var services = scope.ServiceProvider;
-                try
-                {
-                    var context = services.GetRequiredService<DataContext>();
-                    context.Database.Migrate(); // Aplica as migrações pendentes
-                    Console.WriteLine("Migrações aplicadas com sucesso.");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Erro ao aplicar migrações: {ex.Message}");
-                }
-            }
         }
     }
 }

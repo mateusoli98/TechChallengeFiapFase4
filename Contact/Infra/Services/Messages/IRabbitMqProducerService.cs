@@ -1,7 +1,12 @@
-﻿namespace Infra.Services.Messages
+﻿using RabbitMQ.Client;
+
+namespace Infra.Services.Messages
 {
     public interface IRabbitMqProducerService
     {
-        void SendMessage(string message, string queueName);
+        public void SendMessage(string message, string queueName);
+        public void DeclareQueue(string queueName);
+        public (IConnection, IModel) GetConnectionAndChannel();
+        public void Dispose();
     }
 }

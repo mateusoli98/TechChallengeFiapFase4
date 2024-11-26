@@ -45,10 +45,28 @@ public static class HostExtensions
         app.MapControllers();
         app.MapHealthChecks("/health");
         app.MapCustomHealthChecksEndpoints();
+        app.ApplyMigrations();
 
         return app;
     }
 
+    private static void ApplyMigrations(this WebApplication app)
+    {
+        using (var scope = app.Services.CreateScope())
+        {
+            var services = scope.ServiceProvider;
+            try
+            {
+                var context = services.GetRequiredService<DataContext>();
+                context.Database.Migrate(); // Aplica as migrações pendentes
+                Console.WriteLine("Migrações aplicadas com sucesso.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao aplicar migrações: {ex.Message}");
+            }
+        }
+    }
     private static IServiceCollection AddUseCases(this IServiceCollection services)
     {
         services.AddScoped<ISendDeleteContactRequestUseCase, SendDeleteContactRequestUseCase>();
