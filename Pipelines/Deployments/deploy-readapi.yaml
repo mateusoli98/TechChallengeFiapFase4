@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: readapi
+  annotations:
+    description: "Deployment para a API de Consulta"
 spec:
   replicas: 1
   template:
@@ -17,11 +19,14 @@ spec:
       - name: cont-readapi
         image: contactreadapiv1:latest
         imagePullPolicy: Never
+        envFrom:
+            - secretRef:
+                name: database-secrets
+            - configMapRef:
+                name: config-database
         env:
-          - name: ASPNETCORE_URLS
-            value: http://*:8083
-          #- name: SQL_SERVER_CONNECTION_STRING
-          #  value: "Server=mssql-nodeport,1433;Database=ContactDB;User=sa;Password=@Senha123;MultipleActiveResultSets=true;TrustServerCertificate=True;"     
+            - name: ASPNETCORE_URLS
+              value: http://*:8083
         resources:
           limits:
             memory: "128Mi"

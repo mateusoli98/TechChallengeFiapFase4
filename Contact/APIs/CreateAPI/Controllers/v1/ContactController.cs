@@ -19,8 +19,13 @@ public class ContactController(ISendCreateContactRequestUseCase createContact) :
     [HttpPost]
     [ProducesResponseType(202, Type = typeof(CreateContactResponse))]
     [ProducesResponseType(400, Type = typeof(object))]
+    [ProducesResponseType(404, Type = typeof(void))]
     public async Task<ActionResult<CreateContactResponse>> CreateContact([FromBody] CreateContactRequest request, CancellationToken cancellationToken = default)
-    {        
-        return await Result(_createContact.Execute(request, cancellationToken));
+    {
+        var result = await _createContact.Execute(request, cancellationToken);
+        return result.Match<ActionResult>(
+            success => Ok(success),
+            errors => BadRequest(new { message = errors })
+        );
     }
 }

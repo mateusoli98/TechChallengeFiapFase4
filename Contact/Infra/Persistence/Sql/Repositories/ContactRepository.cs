@@ -103,7 +103,7 @@ public class ContactRepository : IContactRepository
                 .AsNoTracking()
                 .FirstOrDefaultAsync(cancellationToken);
 
-            return await query is null;
+            return await query is not null;
         }
         catch (Exception ex)
         {

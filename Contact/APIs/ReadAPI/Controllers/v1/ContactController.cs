@@ -13,8 +13,6 @@ public class ContactController(
     private readonly IGetContactUseCase _getContact = getContact;
     private readonly ISearchContactUseCase _searchContacts = searchContact;
 
-
-
     /// <summary>
     /// Endpoint responsável por recuperar um contato pelo seu Id
     /// </summary>
@@ -26,7 +24,11 @@ public class ContactController(
     [ProducesResponseType(404, Type = typeof(void))]
     public async Task<ActionResult<GetContactResponse>> GetContact([FromRoute] string id, CancellationToken cancellationToken = default)
     {
-        return await Result(_getContact.Execute(id, cancellationToken));
+        var result = await _getContact.Execute(id, cancellationToken);
+        return result.Match<ActionResult>(
+            success => Ok(success),
+            errors => BadRequest(new { message = errors })
+        );
     }
 
     /// <summary>
@@ -40,6 +42,10 @@ public class ContactController(
     [ProducesResponseType(400, Type = typeof(object))]
     public async Task<ActionResult<PaginationResult<SearchContactResponse>>> SearchContacts([FromQuery] ContactFilter filter, CancellationToken cancellationToken = default)
     {
-        return await Result(_searchContacts.Execute(filter, cancellationToken));
+        var result = await _searchContacts.Execute(filter, cancellationToken);
+        return result.Match<ActionResult>(
+            success => Ok(success),
+            errors => BadRequest(new { message = errors })
+        );
     }
 }

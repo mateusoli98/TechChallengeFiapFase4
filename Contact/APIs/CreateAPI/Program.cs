@@ -1,3 +1,5 @@
+using Infra.Migrations;
+using Infra.Persistence.Sql.Context;
 using OpenTelemetry.Metrics;
 using Prometheus;
 
@@ -53,8 +55,10 @@ namespace CreateAPI
 
             app.UseHttpMetrics();
             app.UseMetricServer();
+            MigrationHelper.ApplyMigrations<DataContext>(app);
 
             app.Run();
+
 
         }
 

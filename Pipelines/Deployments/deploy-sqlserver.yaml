@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mssql-deploy
+  annotations:
+    description: "Deployment para criar o banco de dados dentro do cluster"
 spec:
   replicas: 1
   selector:
@@ -17,13 +19,11 @@ spec:
           image: mcr.microsoft.com/mssql/server:2022-latest
           ports:
             - containerPort: 1433
-          env:
-            - name: MSSQL_PID
-              value: "Express"
-            - name: ACCEPT_EULA
-              value: "Y"
-            - name: SA_PASSWORD
-              value: "@Senha123"
+          envFrom:
+            - secretRef:
+                name: database-secrets
+            - configMapRef:
+                name: config-database            
           resources:
             requests:
               memory: "2Gi"

@@ -1,5 +1,4 @@
 using OpenTelemetry.Metrics;
-using OpenTelemetry.Resources;
 using Prometheus;
 
 namespace UpdateAPI
