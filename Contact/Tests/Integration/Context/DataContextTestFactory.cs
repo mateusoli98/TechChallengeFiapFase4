@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
+using Moq;
 
 namespace Integration.Context;
 
@@ -20,5 +21,17 @@ public class DataContextTestFactory
             .Options;
 
         return new DataContext(options);
+    }
+
+    public static IServiceScopeFactory CreateInMemoryServiceScopeFactory()
+    {
+        var dataContext = CreateInMemoryDataContext();
+        var serviceScope = new Mock<IServiceScope>();
+        serviceScope.Setup(x => x.ServiceProvider.GetService(typeof(DataContext))).Returns(dataContext);
+
+        var serviceScopeFactory = new Mock<IServiceScopeFactory>();
+        serviceScopeFactory.Setup(x => x.CreateScope()).Returns(serviceScope.Object);
+
+        return serviceScopeFactory.Object;
     }
 }
