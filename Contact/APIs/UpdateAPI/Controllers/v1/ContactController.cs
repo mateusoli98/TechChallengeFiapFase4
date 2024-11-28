@@ -22,6 +22,10 @@ public class ContactController(ISendUpdateContactRequestUseCase updateContact) :
     [ProducesResponseType(404, Type = typeof(void))]
     public async Task<ActionResult<UpdateContactResponse>> UpdateContact([FromRoute] string id, [FromBody] UpdateContactRequest request, CancellationToken cancellationToken = default)
     {
-        return await Result(_updateContact.Execute(id, request, cancellationToken));
+        var result = await _updateContact.Execute(id, request, cancellationToken);
+        return result.Match<ActionResult>(
+            success => Ok(success),
+            errors => BadRequest(new { message = errors })
+        );
     }
 }

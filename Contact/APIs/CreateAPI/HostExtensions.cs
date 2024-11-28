@@ -1,10 +1,11 @@
-﻿using Application.UseCases.CreateContact;
+﻿using Microsoft.EntityFrameworkCore;
 using Application.UseCases.CreateContact.Interfaces;
+using Application.UseCases.CreateContact;
 using Domain.Repositories.Relational;
-using Infra.Persistence.Sql.Context;
 using Infra.Persistence.Sql.Repositories;
+using Infra.Persistence.Sql.Context;
 using Infra.Services.Messages;
-using Microsoft.EntityFrameworkCore;
+using Infra.Extensions;
 
 
 namespace CreateAPI;
@@ -16,10 +17,13 @@ public static class HostExtensions
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
-
         builder.Services.AddRabbitMQService(builder.Configuration);
         builder.Services.AddRepositories(builder.Configuration);
         builder.Services.AddUseCases();
+
+        builder.Services.AddRabbitMQHealthChecks();
+        builder.Services.AddSQLHealthChecks();
+        builder.Services.AddCustomOpenTelemetry();
 
         return builder;
     }
@@ -33,12 +37,32 @@ public static class HostExtensions
         }
 
         app.UseHttpsRedirection();
-
         app.UseAuthorization();
-
+        app.UseOpenTelemetryPrometheusScrapingEndpoint(); 
         app.MapControllers();
+        app.MapHealthChecks("/health");
+        app.MapCustomHealthChecksEndpoints();
+        app.ApplyMigrations();
 
         return app;
+    }
+
+    private static void ApplyMigrations(this WebApplication app)
+    {
+        using (var scope = app.Services.CreateScope())
+        {
+            var services = scope.ServiceProvider;
+            try
+            {
+                var context = services.GetRequiredService<DataContext>();
+                context.Database.Migrate(); // Aplica as migrações pendentes
+                Console.WriteLine("Migrações aplicadas com sucesso.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao aplicar migrações: {ex.Message}");
+            }
+        }
     }
 
     private static IServiceCollection AddUseCases(this IServiceCollection services)
@@ -52,7 +76,7 @@ public static class HostExtensions
     {
         services.AddDbContext<DataContext>(options =>
         {
-            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+            options.UseSqlServer(Environment.GetEnvironmentVariable("DB_CONNECTIONSTRING"));
         });
 
         services.AddScoped<IContactRepository, ContactRepository>();
@@ -62,25 +86,6 @@ public static class HostExtensions
 
     public static IServiceCollection AddRabbitMQService( this IServiceCollection services, IConfiguration configuration)
     {
-        
-        //var server = configuration.GetSection("MassTransit")["Server"] ?? string.Empty;
-        //var user = configuration.GetSection("MassTransit")["User"] ?? string.Empty;
-        //var password = configuration.GetSection("MassTransit")["Password"] ?? string.Empty;
-
-        //services.AddMassTransit(busConfigurator =>
-        //{
-        //    busConfigurator.UsingRabbitMq((ctx, cfg) =>
-        //    {
-        //        cfg.Host(new Uri(server), host =>
-        //        {
-        //            host.Username(user);
-        //            host.Password(password);
-        //        });
-
-        //        cfg.ConfigureEndpoints(ctx);
-        //    });
-        //});
-
         services.AddScoped<IRabbitMqProducerService, RabbitMqProducerService>();
 
         return services;

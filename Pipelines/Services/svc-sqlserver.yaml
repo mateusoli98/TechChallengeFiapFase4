@@ -2,6 +2,8 @@ apiVersion: v1
 kind: Service
 metadata:
   name: mssql-nodeport
+  annotations:
+    description: "Servico para expor temporariamente o banco de dados para fora do cluster, após será alterado para o tipo ClusterIP"
 spec:
   type: NodePort
   selector:

@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: updateapi
+spec:
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: /metrics
+        prometheus.io/port: "8084"
+      labels:
+        app: label-updateapi
+    spec:
+      containers:
+        - name: cont-updateapi
+          image: contactupdateapiv1:latest
+          imagePullPolicy: Never
+          envFrom:
+              - secretRef:
+                  name: database-secrets
+              - secretRef:
+                  name: rabbitmq-secrets
+              - configMapRef:
+                  name: config-rabbitmq
+              - configMapRef:
+                  name: config-database
+          env:
+              - name: ASPNETCORE_URLS
+                value: http://*:8084
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 8084
+  selector:
+    matchLabels:
+      app: label-updateapi

@@ -1,23 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: createapi
+  name: updateworker
   annotations:
-    description: "Deployment para a API de Criacao"
+    description: "Deployment para o WORKER de Criacao"
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: label-updateworker
   template:
     metadata:
-      annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/path: /metrics
-        prometheus.io/port: "8080"
       labels:
-        app: label-createapi
+        app: label-updateworker
     spec:
       containers:
-      - name: cont-createapi
-        image: contactcreateapiv1:latest
+      - name: cont-updateworker
+        image: updateworkerv1:latest
         imagePullPolicy: Never
         envFrom:
             - secretRef:
@@ -30,13 +29,10 @@ spec:
                 name: config-database
         env:
             - name: ASPNETCORE_URLS
-              value: http://*:8080
+              value: http://*:8087
         resources:
           limits:
             memory: "128Mi"
             cpu: "500m"
         ports:
-        - containerPort: 8080
-  selector:
-    matchLabels:
-      app: label-createapi
+        - containerPort: 8087

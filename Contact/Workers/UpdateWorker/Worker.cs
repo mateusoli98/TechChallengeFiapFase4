@@ -4,40 +4,22 @@ using RabbitMQ.Client;
 using System.Text.Json;
 using System.Text;
 using Domain.Entities;
+using Infra.Services.Messages;
 
 namespace UpdateWorker
 {
-    public class Worker(IUpdateContactProcessingUseCase usecase) : IHostedService
+    public class Worker(IUpdateContactProcessingUseCase usecase, IRabbitMqProducerService rabbitMqProducerService) : IHostedService
     {
         private readonly IUpdateContactProcessingUseCase _useCase = usecase;
-        private IConnection _connection;
+        private readonly IRabbitMqProducerService _rabbitMqProducerService = rabbitMqProducerService;
         private IModel _channel;
-
-        private void InitializeRabbitMQListener()
-        {
-            var factory = new ConnectionFactory
-            {
-                HostName = "host.docker.internal",
-                UserName = "guest",
-                Password = "guest"
-            };
-
-            _connection = factory.CreateConnection();
-            _channel = _connection.CreateModel();
-
-            _channel.QueueDeclare(queue: "update_contact",
-                                  durable: false,
-                                  exclusive: false,
-                                  autoDelete: false,
-                                  arguments: null);
-        }
-
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             try
             {
-                InitializeRabbitMQListener();
+                (_, _channel) = _rabbitMqProducerService.GetConnectionAndChannel();
+                _rabbitMqProducerService.DeclareQueue("update_contact");
 
                 var consumer = new EventingBasicConsumer(_channel);
                 consumer.Received += (model, ea) =>
@@ -46,6 +28,8 @@ namespace UpdateWorker
                     var message = Encoding.UTF8.GetString(body);
 
                     var contact = JsonSerializer.Deserialize<Contact>(message);
+                    Console.WriteLine($"Iniciando atualizacao do usuario '{contact.Id}'");
+
                     if (contact != null)
                     {
                         contact.IsEnabled = true;
@@ -53,9 +37,7 @@ namespace UpdateWorker
                     }
                 };
 
-                _channel.BasicConsume(queue: "update_contact",
-                                      autoAck: true,
-                                      consumer: consumer);
+                _channel.BasicConsume(queue: "update_contact", autoAck: true, consumer: consumer);
             }
             catch (Exception ex)
             {
@@ -65,8 +47,7 @@ namespace UpdateWorker
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            _channel.Close();
-            _connection.Close();
+            _rabbitMqProducerService.Dispose();
             return Task.CompletedTask;
         }
     }

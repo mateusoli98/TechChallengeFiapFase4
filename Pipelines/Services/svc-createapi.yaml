@@ -2,6 +2,8 @@ apiVersion: v1
 kind: Service
 metadata:
   name: svc-createapi
+  annotations:
+    description: "Servico para expor a API de Criacao para fora do cluster"
 spec:
   type: NodePort
   selector:

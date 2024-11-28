@@ -1,9 +1,10 @@
-﻿using Application.UseCases.GetContact;
-using Application.UseCases.SearchContact;
+﻿using Microsoft.EntityFrameworkCore;
 using Domain.Repositories.Relational;
-using Infra.Persistence.Sql.Context;
+using Application.UseCases.GetContact;
+using Application.UseCases.SearchContact;
 using Infra.Persistence.Sql.Repositories;
-using Microsoft.EntityFrameworkCore;
+using Infra.Persistence.Sql.Context;
+using Infra.Extensions;
 
 namespace ReadAPI;
 
@@ -18,6 +19,9 @@ public static class HostExtensions
         builder.Services.AddRepositories(builder.Configuration);
         builder.Services.AddUseCases();
 
+        builder.Services.AddSQLHealthChecks();
+        builder.Services.AddCustomOpenTelemetry();
+
         return builder;
     }
 
@@ -30,12 +34,33 @@ public static class HostExtensions
         }
 
         app.UseHttpsRedirection();
-
         app.UseAuthorization();
-
+        app.UseOpenTelemetryPrometheusScrapingEndpoint();
         app.MapControllers();
+        app.MapHealthChecks("/health");
+        app.MapCustomHealthChecksEndpoints();
+        app.ApplyMigrations();
+
 
         return app;
+    }
+
+    private static void ApplyMigrations(this WebApplication app)
+    {
+        using (var scope = app.Services.CreateScope())
+        {
+            var services = scope.ServiceProvider;
+            try
+            {
+                var context = services.GetRequiredService<DataContext>();
+                context.Database.Migrate(); // Aplica as migrações pendentes
+                Console.WriteLine("Migrações aplicadas com sucesso.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao aplicar migrações: {ex.Message}");
+            }
+        }
     }
 
     private static IServiceCollection AddUseCases(this IServiceCollection services)
@@ -50,7 +75,7 @@ public static class HostExtensions
     {
         services.AddDbContext<DataContext>(options =>
         {
-            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+            options.UseSqlServer(Environment.GetEnvironmentVariable("DB_CONNECTIONSTRING"));
         });
 
         services.AddScoped<IContactRepository, ContactRepository>();
