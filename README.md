@@ -112,7 +112,8 @@ Este comando vai executar todos os pods, services e deployments.
     kubectl get secret --namespace default grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
 ```
 - Dashboards Grafana
-```Importação arquivo json: TechChallengeFiapFase4\Grafana_Dashboards
+```
+   Importação arquivo json: TechChallengeFiapFase4\Grafana_Dashboards
    Importação por ID: 
     18283 (Kubernetes Dashboard)
     19924 (ASP.NET Core)
