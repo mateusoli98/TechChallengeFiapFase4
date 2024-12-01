@@ -46,12 +46,10 @@ jobs:
         run: docker build -t ${{ matrix.name }} -f ${{ matrix.dockerfile }} .
       
       - name: Create Docker Images Directory
-        working-directory: ./Contact
-        run: mkdir -p ./docker_images 
+        run: mkdir -p ./Contact/docker_images 
 
       - name: Save Docker Image as TAR
-        working-directory: ./Contact
-        run: docker save -o ./docker_images/${{ matrix.name }}.tar ${{ matrix.name }}
+        run: docker save -o ./Contact/docker_images/${{ matrix.name }}.tar ${{ matrix.name }}
 
       - name: Upload Docker Image as Artifact       
         uses: actions/upload-artifact@v3
@@ -138,7 +136,8 @@ jobs:
       - name: Load Docker Images
         run: |
           for tar_file in ./Contact/docker_images/*.tar; do
-            docker load -i "$tar_file"
+            echo "Loading image from $tar_file"
+            
           done
       #   run: |
       #     docker load -i ./Contact/docker_images/contactcreateapiv1.tar
