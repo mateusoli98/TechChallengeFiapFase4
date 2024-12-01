@@ -25,25 +25,25 @@ jobs:
             dockerfile: Workers/DeleteWorker/Dockerfile
           - name: updateworkerv1
             dockerfile: Workers/UpdateWorker/Dockerfile
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-    
-      - name: Build Docker Image
-        run: docker build -t ${{ matrix.image.name }} -f ${{ matrix.image.dockerfile }} .
-    
-      - name: Save Docker Image as Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ matrix.image.name }}
-          path: ${{ matrix.image.name }}.tar
-        run: docker save -o ${{ matrix.image.name }}.tar ${{ matrix.image.name }}
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v4
+
+    - name: Build Docker Image
+      run: docker build -t ${{ matrix.image.name }} -f ${{ matrix.image.dockerfile }} .
+
+    - name: Save Docker Image as Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ matrix.image.name }}
+        path: ${{ matrix.image.name }}.tar
+      run: docker save -o ${{ matrix.image.name }}.tar ${{ matrix.image.name }}
 
   dotnet_build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-  
+
       - name: Cache .NET packages
         uses: actions/cache@v3
         with:
@@ -51,15 +51,15 @@ jobs:
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/packages.config') }}
           restore-keys: |
             ${{ runner.os }}-nuget-
-  
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.300
-  
+
       - name: Restore dependencies
         run: dotnet restore Contact
-  
+
       - name: Build
         run: dotnet build Contact --no-restore
 
