@@ -133,7 +133,7 @@ jobs:
           path: ./Contact/docker_images
      
       - name: Rename Docker Image File
-        run: mv ./Contact/docker_images/${{ matrix.name }} ./Contact/docker_images/${{ matrix.name }}.tar
+        run: mv ./Contact/docker_images/contactdeleteapiv1 ./Contact/docker_images/contactdeleteapiv1.tar
          
       - name: Load Docker Images
         run: |
