@@ -12,19 +12,19 @@ jobs:
       matrix:
         include:
           - name: contactcreateapiv1
-            dockerfile: APIs/CreateAPI/Dockerfile
+            dockerfile: Contact/APIs/CreateAPI/Dockerfile
           - name: contactdeleteapiv1
-            dockerfile: APIs/DeleteAPI/Dockerfile
+            dockerfile: Contact/APIs/DeleteAPI/Dockerfile
           - name: contactreadapiv1
-            dockerfile: APIs/ReadAPI/Dockerfile
+            dockerfile: Contact/APIs/ReadAPI/Dockerfile
           - name: contactupdateapiv1
-            dockerfile: APIs/UpdateAPI/Dockerfile
+            dockerfile: Contact/APIs/UpdateAPI/Dockerfile
           - name: createworkerv1
-            dockerfile: Workers/CreateWorker/Dockerfile
+            dockerfile: Contact/Workers/CreateWorker/Dockerfile
           - name: deleteworkerv1
-            dockerfile: Workers/DeleteWorker/Dockerfile
+            dockerfile: Contact/Workers/DeleteWorker/Dockerfile
           - name: updateworkerv1
-            dockerfile: Workers/UpdateWorker/Dockerfile
+            dockerfile: Contact/Workers/UpdateWorker/Dockerfile
 
     runs-on: ubuntu-latest
     steps:
