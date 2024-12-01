@@ -49,27 +49,15 @@ jobs:
         working-directory: ./Contact
         run: mkdir -p ./docker_images 
 
-      - name: List files
-        working-directory: ./Contact
-        run: ls
-     
       - name: Save Docker Image as TAR
         working-directory: ./Contact
         run: docker save -o ./docker_images/${{ matrix.name }}.tar ${{ matrix.name }}
 
-      - name: List files
-        working-directory: ./Contact
-        run: ls
-      
       - name: Upload Docker Image as Artifact       
         uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.name }}
           path: ./Contact/docker_images/${{ matrix.name }}.tar
-
-      - name: List files
-        working-directory: ./Contact
-        run: ls ./docker_images
 
   # dotnet_build:
   #   runs-on: ubuntu-latest
@@ -134,21 +122,20 @@ jobs:
   #     - name: Run Integration Tests
   #       run: dotnet test Contact/Tests/Integration --filter Integration
 
-  # kubernetes_validation:
-  #   runs-on: ubuntu-latest
-  #   needs: [docker_build]
-  #   steps:
-  #     - uses: actions/checkout@v4
+  kubernetes_validation:
+    runs-on: ubuntu-latest
+    needs: [docker_build]
+    steps:
+      - uses: actions/checkout@v4
 
-  #     - name: Download Docker Images
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: ${{ matrix.name }}
-  #         path: ./docker_images
+      - name: Download Docker Images
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ matrix.name }}
+          path: ./Contact/docker_images
 
-  #     - name: List Docker Images Directory
-  #       working-directory: ./Contact
-  #       run: ls ./docker_images
+      - name: List Docker Images Directory
+        run: ls ./Contact/docker_images
   
       # - name: Load Docker Images
       #   run: |
