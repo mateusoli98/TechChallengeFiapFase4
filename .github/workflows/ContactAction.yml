@@ -25,19 +25,20 @@ jobs:
             dockerfile: Workers/DeleteWorker/Dockerfile
           - name: updateworkerv1
             dockerfile: Workers/UpdateWorker/Dockerfile
+
   runs-on: ubuntu-latest
   steps:
     - uses: actions/checkout@v4
 
     - name: Build Docker Image
-      run: docker build -t ${{ matrix.image.name }} -f ${{ matrix.image.dockerfile }} .
+      run: docker build -t ${{ matrix.name }} -f ${{ matrix.dockerfile }} .
 
     - name: Save Docker Image as Artifact
+      run: docker save -o ${{ matrix.name }}.tar ${{ matrix.name }}
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ matrix.image.name }}
-        path: ${{ matrix.image.name }}.tar
-      run: docker save -o ${{ matrix.image.name }}.tar ${{ matrix.image.name }}
+        name: ${{ matrix.name }}
+        path: ${{ matrix.name }}.tar
 
   dotnet_build:
     runs-on: ubuntu-latest
@@ -111,18 +112,12 @@ jobs:
       - name: Download Docker Images
         uses: actions/download-artifact@v3
         with:
-          name: ${{ matrix.image.name }}
-          path: ${{ matrix.image.name }}.tar
+          name: ${{ matrix.name }}
+          path: ${{ matrix.name }}.tar
 
       - name: Load Docker Images
         run: |
-          docker load -i contactcreateapiv1.tar
-          docker load -i contactdeleteapiv1.tar
-          docker load -i contactreadapiv1.tar
-          docker load -i contactupdateapiv1.tar
-          docker load -i createworkerv1.tar
-          docker load -i deleteworkerv1.tar
-          docker load -i updateworkerv1.tar
+          docker load -i ${{ matrix.name }}.tar
 
       - name: Install Kind
         run: |
@@ -135,13 +130,7 @@ jobs:
 
       - name: Load Docker Images into Kind
         run: |
-          kind load docker-image contactcreateapiv1 --name contact-cluster
-          kind load docker-image contactdeleteapiv1 --name contact-cluster
-          kind load docker-image contactreadapiv1 --name contact-cluster
-          kind load docker-image contactupdateapiv1 --name contact-cluster
-          kind load docker-image updateworkerv1:latest --name contact-cluster
-          kind load docker-image deleteworkerv1:latest --name contact-cluster
-          kind load docker-image updateworkerv1:latest --name contact-cluster
+          kind load docker-image ${{ matrix.name }} --name contact-cluster
 
       - name: Apply Kubernetes Manifests
         run: kubectl apply -R -f Contact/Pipelines/
