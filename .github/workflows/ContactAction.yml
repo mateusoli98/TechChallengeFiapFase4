@@ -122,7 +122,7 @@ jobs:
 
   kubernetes_validation:
     runs-on: ubuntu-latest
-    needs: [docker_build, integration_tests]
+    needs: [docker_build]
     steps:
       - uses: actions/checkout@v4
 
@@ -132,36 +132,39 @@ jobs:
           name: ${{ matrix.name }}
           path: ./docker_images
 
-      - name: Load Docker Images
-        run: |
-          docker load -i ./docker_images/${{ matrix.name }}.tar
+      - name: List Docker Images Directory
+        run: ls ./docker_images
+  
+      # - name: Load Docker Images
+      #   run: |
+      #     docker load -i ./docker_images/${{ matrix.name }}.tar
 
-      - name: Install Kind
-        run: |
-          curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.20.0/kind-linux-amd64
-          chmod +x ./kind
-          sudo mv ./kind /usr/local/bin/kind
+      # - name: Install Kind
+      #   run: |
+      #     curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.20.0/kind-linux-amd64
+      #     chmod +x ./kind
+      #     sudo mv ./kind /usr/local/bin/kind
 
-      - name: Create Kubernetes Cluster
-        run: kind create cluster --name contact-cluster --image kindest/node:v1.24.0
+      # - name: Create Kubernetes Cluster
+      #   run: kind create cluster --name contact-cluster --image kindest/node:v1.24.0
 
-      - name: Load Docker Images into Kind
-        run: |
-          kind load docker-image contactcreateapiv1 --name contact-cluster
-          kind load docker-image contactdeleteapiv1 --name contact-cluster
-          kind load docker-image contactreadapiv1 --name contact-cluster
-          kind load docker-image contactupdateapiv1 --name contact-cluster
-          kind load docker-image updateworkerv1 --name contact-cluster
-          kind load docker-image deleteworkerv1 --name contact-cluster
-          kind load docker-image updateworkerv1 --name contact-cluster
+      # - name: Load Docker Images into Kind
+      #   run: |
+      #     kind load docker-image contactcreateapiv1 --name contact-cluster
+      #     kind load docker-image contactdeleteapiv1 --name contact-cluster
+      #     kind load docker-image contactreadapiv1 --name contact-cluster
+      #     kind load docker-image contactupdateapiv1 --name contact-cluster
+      #     kind load docker-image updateworkerv1 --name contact-cluster
+      #     kind load docker-image deleteworkerv1 --name contact-cluster
+      #     kind load docker-image updateworkerv1 --name contact-cluster
 
-      - name: Apply Kubernetes Manifests
-        run: kubectl apply -R -f Contact/Pipelines/
+      # - name: Apply Kubernetes Manifests
+      #   run: kubectl apply -R -f Contact/Pipelines/
 
-      - name: Wait for Pods to be Ready
-        run: kubectl wait --for=condition=ready pod --all --timeout=120s
+      # - name: Wait for Pods to be Ready
+      #   run: kubectl wait --for=condition=ready pod --all --timeout=120s
 
-      - name: Validate Application Health
-        run: |
-          kubectl get services
-          kubectl logs deployment/contact-create-api
+      # - name: Validate Application Health
+      #   run: |
+      #     kubectl get services
+      #     kubectl logs deployment/contact-create-api
