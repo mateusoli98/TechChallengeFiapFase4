@@ -49,7 +49,7 @@ jobs:
         run: mkdir -p ./Contact/docker_images 
 
       - name: Save Docker Image as TAR
-        run: docker save -o ./Contact/docker_images/${{ matrix.name }}.tar ${{ matrix.name }}.tar
+        run: docker save ${{ matrix.name }} > ./Contact/docker_images/${{ matrix.name }}.tar
 
       - name: Debug Directory Content
         run: ls -lh ./Contact/docker_images
