@@ -12,42 +12,45 @@ jobs:
       matrix:
         include:
           - name: contactcreateapiv1
-            dockerfile: Contact/APIs/CreateAPI/Dockerfile
+            dockerfile: APIs/CreateAPI/Dockerfile
           - name: contactdeleteapiv1
-            dockerfile: Contact/APIs/DeleteAPI/Dockerfile
+            dockerfile: APIs/DeleteAPI/Dockerfile
           - name: contactreadapiv1
-            dockerfile: Contact/APIs/ReadAPI/Dockerfile
+            dockerfile: APIs/ReadAPI/Dockerfile
           - name: contactupdateapiv1
-            dockerfile: Contact/APIs/UpdateAPI/Dockerfile
+            dockerfile: APIs/UpdateAPI/Dockerfile
           - name: createworkerv1
-            dockerfile: Contact/Workers/CreateWorker/Dockerfile
+            dockerfile: Workers/CreateWorker/Dockerfile
           - name: deleteworkerv1
-            dockerfile: Contact/Workers/DeleteWorker/Dockerfile
+            dockerfile: Workers/DeleteWorker/Dockerfile
           - name: updateworkerv1
-            dockerfile: Contact/Workers/UpdateWorker/Dockerfile
+            dockerfile: Workers/UpdateWorker/Dockerfile
 
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+     
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.300
-
-      - name: Restore dependencies
-        run: dotnet restore Contact
-
-      - name: Build .NET project
-        run: dotnet build Contact --no-restore
+  
+      - name: Restore Dependencies
+        run: cd Contact && dotnet restore
+        
+      - name: Build
+        run: cd Contact && dotnet build --no-restore
 
       - name: Build Docker Image
+        working-directory: ./Contact
         run: docker build -t ${{ matrix.name }} -f ${{ matrix.dockerfile }} .
 
       - name: Save Docker Image as TAR
+        working-directory: ./Contact
         run: docker save -o ${{ matrix.name }}.tar ${{ matrix.name }}
       
       - name: Upload Docker Image as Artifact
+        working-directory: ./Contact
         uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.name }}
