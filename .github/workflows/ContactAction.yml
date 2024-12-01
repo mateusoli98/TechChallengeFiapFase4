@@ -44,10 +44,12 @@ jobs:
       - name: Build Docker Image
         working-directory: ./Contact
         run: docker build -t ${{ matrix.name }} -f ${{ matrix.dockerfile }} .
-
+      
+      - name: Create Docker Images Directory
+        run: mkdir -p ./docker_images 
+     
       - name: Save Docker Image as TAR
-        working-directory: ./Contact
-        run: docker save -o ${{ matrix.name }}.tar ${{ matrix.name }}
+        run: docker save -o ./docker_images/${{ matrix.name }}.tar ${{ matrix.name }}
       
       - name: Upload Docker Image as Artifact       
         uses: actions/upload-artifact@v3
@@ -130,19 +132,9 @@ jobs:
           name: ${{ matrix.name }}
           path: ./docker_images
 
-      - name: List Docker Images
-        run: |
-          ls -l ./docker_images
-
       - name: Load Docker Images
         run: |
-          docker load -i ./docker_images/contactcreateapiv1.tar
-          docker load -i ./docker_images/contactdeleteapiv1.tar
-          docker load -i ./docker_images/contactreadapiv1.tar
-          docker load -i ./docker_images/contactupdateapiv1.tar
-          docker load -i ./docker_images/createworkerv1.tar
-          docker load -i ./docker_images/deleteworkerv1.tar
-          docker load -i ./docker_images/updateworkerv1.tar
+          docker load -i ./docker_images/${{ matrix.name }}.tar
 
       - name: Install Kind
         run: |
