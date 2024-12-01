@@ -113,6 +113,16 @@ jobs:
   
       steps:
       - uses: actions/checkout@v4
+
+      - name: Build Docker Images
+        run: |
+          docker build -t contactcreateapiv1 -f APIs/CreateAPI/Dockerfile .
+          docker build -t contactdeleteapiv1 -f APIs/DeleteAPI/Dockerfile .
+          docker build -t contactreadapiv1 -f APIs/ReadAPI/Dockerfile .
+          docker build -t contactupdateapiv1 -f APIs/UpdateAPI/Dockerfile .
+          docker build -t createworker-tech3:latest -f ./Workers/CreateWorker/Dockerfile .
+          docker build -t deleteworker-tech3:latest -f ./Workers/DeleteWorker/Dockerfile . 
+          docker build -t updateworker-tech3:latest -f ./Workers/UpdateWorker/Dockerfile .
   
       - name: Install Kind
         run: |
