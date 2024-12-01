@@ -155,6 +155,7 @@ jobs:
         run: kind create cluster --name contact-cluster --image kindest/node:v1.24.0
 
       - name: Load Docker Images into Kind
+        working-directory: ./Contact/docker_images/
         run: |
           kind load docker-image contactcreateapiv1 --name contact-cluster
           kind load docker-image contactdeleteapiv1 --name contact-cluster
