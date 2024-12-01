@@ -154,16 +154,16 @@ jobs:
       - name: Create Kubernetes Cluster
         run: kind create cluster --name contact-cluster --image kindest/node:v1.24.0
 
-      - name: Load Docker Images into Kind
-        working-directory: ./Contact/docker_images/
-        run: |
-          kind load docker-image contactcreateapiv1 --name contact-cluster
-          kind load docker-image contactdeleteapiv1 --name contact-cluster
-          kind load docker-image contactreadapiv1 --name contact-cluster
-          kind load docker-image contactupdateapiv1 --name contact-cluster
-          kind load docker-image updateworkerv1 --name contact-cluster
-          kind load docker-image deleteworkerv1 --name contact-cluster
-          kind load docker-image updateworkerv1 --name contact-cluster
+      # - name: Load Docker Images into Kind
+      #   working-directory: ./Contact/docker_images/
+      #   run: |
+      #     kind load docker-image contactcreateapiv1 --name contact-cluster
+      #     kind load docker-image contactdeleteapiv1 --name contact-cluster
+      #     kind load docker-image contactreadapiv1 --name contact-cluster
+      #     kind load docker-image contactupdateapiv1 --name contact-cluster
+      #     kind load docker-image updateworkerv1 --name contact-cluster
+      #     kind load docker-image deleteworkerv1 --name contact-cluster
+      #     kind load docker-image updateworkerv1 --name contact-cluster
 
       - name: Apply Kubernetes Manifests
         run: kubectl apply -R -f ./Contact/Pipelines/
