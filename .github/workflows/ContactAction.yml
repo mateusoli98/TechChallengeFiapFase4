@@ -129,7 +129,7 @@ jobs:
       - name: Download Docker Images
         uses: actions/download-artifact@v3
         with:
-          name: ${{ matrix.name }}
+          name: contactdeleteapiv1  
           path: ./Contact/docker_images
           
       - name: List
