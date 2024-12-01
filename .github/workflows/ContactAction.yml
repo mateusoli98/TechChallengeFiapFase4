@@ -133,43 +133,46 @@ jobs:
         with:
           name: ${{ matrix.name }}
           path: ./Contact/docker_images
-  
-      - name: Load Docker Images
+      - name: Download Docker Images
         run: |
-          docker load -i ./Contact/docker_images/contactcreateapiv1.tar
-          docker load -i ./Contact/docker_images/contactdeleteapiv1.tar
-          docker load -i ./Contact/docker_images/contactreadapiv1.tar
-          docker load -i ./Contact/docker_images/contactupdateapiv1.tar
-          docker load -i ./Contact/docker_images/updateworkerv1.tar
-          docker load -i ./Contact/docker_images/deleteworkerv1.tar
-          docker load -i ./Contact/docker_images/updateworkerv1.tar
+          ls ./Contact/docker_images
+         
+      # - name: Load Docker Images
+      #   run: |
+      #     docker load -i ./Contact/docker_images/contactcreateapiv1.tar
+      #     docker load -i ./Contact/docker_images/contactdeleteapiv1.tar
+      #     docker load -i ./Contact/docker_images/contactreadapiv1.tar
+      #     docker load -i ./Contact/docker_images/contactupdateapiv1.tar
+      #     docker load -i ./Contact/docker_images/updateworkerv1.tar
+      #     docker load -i ./Contact/docker_images/deleteworkerv1.tar
+      #     docker load -i ./Contact/docker_images/updateworkerv1.tar
 
-      - name: Install Kind
-        run: |
-          curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.20.0/kind-linux-amd64
-          chmod +x ./kind
-          sudo mv ./kind /usr/local/bin/kind
+      # - name: Install Kind
+      #   run: |
+      #     curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.20.0/kind-linux-amd64
+      #     chmod +x ./kind
+      #     sudo mv ./kind /usr/local/bin/kind
 
-      - name: Create Kubernetes Cluster
-        run: kind create cluster --name contact-cluster --image kindest/node:v1.24.0
+      # - name: Create Kubernetes Cluster
+      #   run: kind create cluster --name contact-cluster --image kindest/node:v1.24.0
 
-      - name: Load Docker Images into Kind
-        run: |
-          kind load docker-image contactcreateapiv1 --name contact-cluster
-          kind load docker-image contactdeleteapiv1 --name contact-cluster
-          kind load docker-image contactreadapiv1 --name contact-cluster
-          kind load docker-image contactupdateapiv1 --name contact-cluster
-          kind load docker-image updateworkerv1 --name contact-cluster
-          kind load docker-image deleteworkerv1 --name contact-cluster
-          kind load docker-image updateworkerv1 --name contact-cluster
+      # - name: Load Docker Images into Kind
+      #   run: |
+      #     kind load docker-image contactcreateapiv1 --name contact-cluster
+      #     kind load docker-image contactdeleteapiv1 --name contact-cluster
+      #     kind load docker-image contactreadapiv1 --name contact-cluster
+      #     kind load docker-image contactupdateapiv1 --name contact-cluster
+      #     kind load docker-image updateworkerv1 --name contact-cluster
+      #     kind load docker-image deleteworkerv1 --name contact-cluster
+      #     kind load docker-image updateworkerv1 --name contact-cluster
 
-      - name: Apply Kubernetes Manifests
-        run: kubectl apply -R -f ./Contact/Pipelines/
+      # - name: Apply Kubernetes Manifests
+      #   run: kubectl apply -R -f ./Contact/Pipelines/
 
-      - name: Wait for Pods to be Ready
-        run: kubectl wait --for=condition=ready pod --all --timeout=120s
+      # - name: Wait for Pods to be Ready
+      #   run: kubectl wait --for=condition=ready pod --all --timeout=120s
 
-      - name: Validate Application Health
-        run: |
-          kubectl get services
-          kubectl logs deployment/contact-create-api
+      # - name: Validate Application Health
+      #   run: |
+      #     kubectl get services
+      #     kubectl logs deployment/contact-create-api
