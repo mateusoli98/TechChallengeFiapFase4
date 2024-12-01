@@ -136,7 +136,13 @@ jobs:
   
       - name: Load Docker Images
         run: |
-          docker load -i ./Contact/docker_images/${{ matrix.name }}.tar
+          docker load -i ./Contact/docker_images/contactcreateapiv1.tar
+          docker load -i ./Contact/docker_images/contactdeleteapiv1.tar
+          docker load -i ./Contact/docker_images/contactreadapiv1.tar
+          docker load -i ./Contact/docker_images/contactupdateapiv1.tar
+          docker load -i ./Contact/docker_images/updateworkerv1.tar
+          docker load -i ./Contact/docker_images/deleteworkerv1.tar
+          docker load -i ./Contact/docker_images/updateworkerv1.tar
 
       - name: Install Kind
         run: |
