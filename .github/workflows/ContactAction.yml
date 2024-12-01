@@ -57,72 +57,72 @@ jobs:
           name: docker_images
           path: ./Contact/docker_images/*.tar 
 
-  # dotnet_build:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
+  dotnet_build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-  #     - name: Cache .NET packages
-  #       uses: actions/cache@v3
-  #       with:
-  #         path: ~/.nuget/packages
-  #         key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/packages.config') }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-nuget-
+      - name: Cache .NET packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/packages.config') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
 
-  #     - name: Setup .NET
-  #       uses: actions/setup-dotnet@v4
-  #       with:
-  #         dotnet-version: 8.0.300
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.300
 
-  #     - name: Restore dependencies
-  #       run: dotnet restore Contact
+      - name: Restore dependencies
+        run: dotnet restore Contact
 
-  #     - name: Build
-  #       run: dotnet build Contact --no-restore
+      - name: Build
+        run: dotnet build Contact --no-restore
 
-  # unit_tests:
-  #   runs-on: ubuntu-latest
-  #   needs: dotnet_build
-  #   steps:
-  #     - uses: actions/checkout@v4
+  unit_tests:
+    runs-on: ubuntu-latest
+    needs: dotnet_build
+    steps:
+      - uses: actions/checkout@v4
 
-  #     - name: Setup .NET
-  #       uses: actions/setup-dotnet@v4
-  #       with:
-  #         dotnet-version: 8.0.300
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.300
 
-  #     - name: Cache .NET packages
-  #       uses: actions/cache@v3
-  #       with:
-  #         path: ~/.nuget/packages
-  #         key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/packages.config') }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-nuget-
+      - name: Cache .NET packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/packages.config') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
 
-  #     - name: Restore dependencies
-  #       run: dotnet restore Contact
+      - name: Restore dependencies
+        run: dotnet restore Contact
 
-  #     - name: Run Unit Tests
-  #       run: dotnet test Contact/Tests/Unit --filter Unit
+      - name: Run Unit Tests
+        run: dotnet test Contact/Tests/Unit --filter Unit
 
-  # integration_tests:
-  #   runs-on: ubuntu-latest
-  #   needs: unit_tests
-  #   steps:
-  #     - uses: actions/checkout@v4
+  integration_tests:
+    runs-on: ubuntu-latest
+    needs: unit_tests
+    steps:
+      - uses: actions/checkout@v4
 
-  #     - name: Setup .NET
-  #       uses: actions/setup-dotnet@v4
-  #       with:
-  #         dotnet-version: 8.0.300
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.300
 
-  #     - name: Run Integration Tests
-  #       run: dotnet test Contact/Tests/Integration --filter Integration
+      - name: Run Integration Tests
+        run: dotnet test Contact/Tests/Integration --filter Integration
 
   kubernetes_validation:
     runs-on: ubuntu-latest
-    needs: [docker_build]
+    needs: [docker_build, integration_tests]
     steps:
       - uses: actions/checkout@v4
 
@@ -144,7 +144,6 @@ jobs:
       - name: List Docker images
         run: docker images 
 
-
       - name: Install Kind
         run: |
           curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.20.0/kind-linux-amd64
@@ -154,21 +153,12 @@ jobs:
       - name: Create Kubernetes Cluster
         run: kind create cluster --name contact-cluster --image kindest/node:v1.24.0
 
-      # - name: Load Docker Images into Kind
-      #   working-directory: ./Contact/docker_images/
-      #   run: |
-      #     kind load docker-image contactcreateapiv1 --name contact-cluster
-      #     kind load docker-image contactdeleteapiv1 --name contact-cluster
-      #     kind load docker-image contactreadapiv1 --name contact-cluster
-      #     kind load docker-image contactupdateapiv1 --name contact-cluster
-      #     kind load docker-image updateworkerv1 --name contact-cluster
-      #     kind load docker-image deleteworkerv1 --name contact-cluster
-      #     kind load docker-image updateworkerv1 --name contact-cluster
-
       - name: Apply Kubernetes Manifests
-        run: kubectl apply -R -f ./Contact/Pipelines/
+        working-directory: ./Pipelines/
+        run: kubectl apply -R -f .
 
       - name: Wait for Pods to be Ready
+        working-directory: ./Pipelines/
         run: kubectl wait --for=condition=ready pod --all --timeout=120s
 
       - name: Validate Application Health
