@@ -133,11 +133,13 @@ jobs:
         with:
           name: ${{ matrix.name }}
           path: ./Contact/docker_images
-      - name: Download Docker Images
-        run: |
-          ls ./Contact/docker_images
+     
          
-      # - name: Load Docker Images
+      - name: Load Docker Images
+        run: |
+          for tar_file in ./Contact/docker_images/*.tar; do
+            docker load -i "$tar_file"
+          done
       #   run: |
       #     docker load -i ./Contact/docker_images/contactcreateapiv1.tar
       #     docker load -i ./Contact/docker_images/contactdeleteapiv1.tar
