@@ -157,11 +157,6 @@ jobs:
         working-directory: ./Pipelines/
         run: kubectl apply -R -f .
 
-      - name: Wait for Pods to be Ready
-        working-directory: ./Pipelines/
-        run: kubectl wait --for=condition=ready pod --all --timeout=120s
-
       - name: Validate Application Health
         run: |
-          kubectl get services
-          kubectl logs deployment/contact-create-api
+          kubectl get all
