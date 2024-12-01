@@ -80,6 +80,43 @@ Este comando vai executar todos os pods, services e deployments.
 - Update: http://localhost:30003/swagger/index.html
 - Delete: http://localhost:30005/swagger/index.html
 
-# Prometheus e Grafana
+# Prometheus 
+
+- Instalando o Prometheus: https://artifacthub.io/packages/helm/prometheus-community/prometheus
+
+- Execute os comandos:
+```shell
+    helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+    helm repo update
+    helm install prometheus prometheus-community/prometheus
+```
+- Para acessar o Prometheus
+```shell
+    kubectl --namespace default port-forward $POD_NAME 9090
+```
+
+# Grafana
+
+- Instalando o Grafana: https://artifacthub.io/packages/helm/grafana/grafana
+```shell
+    helm repo add grafana https://grafana.github.io/helm-charts
+    helm repo update
+    helm install grafana grafana/Grafana
+```
+- Para acessar o Grafana
+```shell
+    kubectl --namespace default port-forward $POD_NAME 3000
+```
+- Para recuperar a senha do Grafana
+```Linux
+    kubectl get secret --namespace default grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+```
+- Dashboards Grafana
+```Importação arquivo json: TechChallengeFiapFase4\Grafana_Dashboards
+   Importação por ID: 
+    18283 (Kubernetes Dashboard)
+    19924 (ASP.NET Core)
+    19925 (ASP.NET Core Endpoint)
+```
 
 
