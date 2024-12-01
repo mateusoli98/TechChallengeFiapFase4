@@ -49,7 +49,7 @@ jobs:
         run: mkdir -p ./Contact/docker_images 
 
       - name: Save Docker Image as TAR
-        run: docker save -o ./Contact/docker_images/${{ matrix.name }}.tar ${{ matrix.name }}
+        run: docker save -o ./Contact/docker_images/ ${{ matrix.name }}.tar
 
       - name: Upload Docker Image as Artifact       
         uses: actions/upload-artifact@v3
@@ -132,9 +132,6 @@ jobs:
           name: ${{ matrix.name }}
           path: ./Contact/docker_images
      
-      - name: Rename Docker Image File
-        run: mv ./Contact/docker_images/contactdeleteapiv1 ./Contact/docker_images/contactdeleteapiv1.tar
-         
       - name: Load Docker Images
         run: |
           docker load -i ./Contact/docker_images/contactdeleteapiv1.tar
