@@ -141,6 +141,10 @@ jobs:
           docker load -i ./Contact/docker_images/deleteworkerv1.tar
           docker load -i ./Contact/docker_images/updateworkerv1.tar
 
+      - name: List Docker images
+        run: docker images 
+
+
       - name: Install Kind
         run: |
           curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.20.0/kind-linux-amd64
