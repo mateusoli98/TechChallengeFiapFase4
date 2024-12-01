@@ -29,6 +29,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.300
+
+      - name: Restore dependencies
+        run: dotnet restore Contact
+
+      - name: Build .NET project
+        run: dotnet build Contact --no-restore
 
       - name: Build Docker Image
         run: docker build -t ${{ matrix.name }} -f ${{ matrix.dockerfile }} .
