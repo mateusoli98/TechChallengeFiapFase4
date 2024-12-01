@@ -136,7 +136,7 @@ jobs:
       - name: Load Docker Images 
         working-directory: ./Contact/docker_images/
         run: |
-          docker load -i .
+          docker load -i contactdeleteapiv1.tar
       #     docker load -i ./Contact/docker_images/contactdeleteapiv1.tar
       #     docker load -i ./Contact/docker_images/contactreadapiv1.tar
       #     docker load -i ./Contact/docker_images/contactupdateapiv1.tar
