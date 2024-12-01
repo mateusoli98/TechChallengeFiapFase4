@@ -49,8 +49,7 @@ jobs:
         working-directory: ./Contact
         run: docker save -o ${{ matrix.name }}.tar ${{ matrix.name }}
       
-      - name: Upload Docker Image as Artifact
-        working-directory: ./Contact
+      - name: Upload Docker Image as Artifact       
         uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.name }}
