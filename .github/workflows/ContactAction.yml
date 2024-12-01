@@ -2,155 +2,153 @@ name: Contacts
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
-  APIs_DockerBuild:
+  docker_build:
+    strategy:
+      matrix:
+        include:
+          - name: contactcreateapiv1
+            dockerfile: APIs/CreateAPI/Dockerfile
+          - name: contactdeleteapiv1
+            dockerfile: APIs/DeleteAPI/Dockerfile
+          - name: contactreadapiv1
+            dockerfile: APIs/ReadAPI/Dockerfile
+          - name: contactupdateapiv1
+            dockerfile: APIs/UpdateAPI/Dockerfile
+          - name: createworkerv1
+            dockerfile: Workers/CreateWorker/Dockerfile
+          - name: deleteworkerv1
+            dockerfile: Workers/DeleteWorker/Dockerfile
+          - name: updateworkerv1
+            dockerfile: Workers/UpdateWorker/Dockerfile
     runs-on: ubuntu-latest
-    
     steps:
-    - uses: actions/checkout@v4
-   
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.300
-
-    - name: Restore Dependencies
-      run: cd Contact && dotnet restore
-      
-    - name: Build
-      run: cd Contact && dotnet build --no-restore
- 
-    - name: API Create Contact - Docker Build
-      working-directory: ./Contact
-      run: docker build --no-cache -t contactcreateapiv1 -f APIs/CreateAPI/Dockerfile .
-
-    - name: API Delete Contact - Docker Build
-      working-directory: ./Contact
-      run: docker build --no-cache -t contactdeleteapiv1 -f APIs/DeleteAPI/Dockerfile .
-      
-    - name: API Read Contact - Docker Build
-      working-directory: ./Contact
-      run: docker build --no-cache -t contactreadapiv1 -f APIs/ReadAPI/Dockerfile .
-    
-    - name: API Update Contact - Docker Build
-      working-directory: ./Contact
-      run: docker build --no-cache -t contactupdateapiv1 -f APIs/UpdateAPI/Dockerfile .  
-    
-
-  Workers_DockerBuild:
-    runs-on: ubuntu-latest
-    needs: APIs_DockerBuild
-    
-    steps:
-    - uses: actions/checkout@v4
-   
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.300
-
-    - name: Restore dependencies
-      run: cd Contact && dotnet restore
-      
-    - name: Build
-      run: cd Contact && dotnet build --no-restore 
-    
-    - name: Worker Create Contant - Docker Build
-      working-directory: ./Contact
-      run: docker build -t createworker-tech3:latest -f ./Workers/CreateWorker/Dockerfile .
-      
-    - name: Worker Update Contant - Docker Build
-      working-directory: ./Contact
-      run: docker build -t deleteworker-tech3:latest -f ./Workers/DeleteWorker/Dockerfile . 
-      
-    - name: Worker Delete Contant - Docker Build
-      working-directory: ./Contact
-      run: docker build -t updateworker-tech3:latest -f ./Workers/UpdateWorker/Dockerfile .
-      
-  UnitTests:
-     runs-on: ubuntu-latest
-     needs: Workers_DockerBuild
-
-     steps:     
       - uses: actions/checkout@v4
-      
+    
+      - name: Build Docker Image
+        run: docker build -t ${{ matrix.image.name }} -f ${{ matrix.image.dockerfile }} .
+    
+      - name: Save Docker Image as Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.image.name }}
+          path: ${{ matrix.image.name }}.tar
+        run: docker save -o ${{ matrix.image.name }}.tar ${{ matrix.image.name }}
+
+  dotnet_build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+  
+      - name: Cache .NET packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/packages.config') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+  
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.300
-          
+  
       - name: Restore dependencies
-        run: cd Contact/ && dotnet restore
-        
+        run: dotnet restore Contact
+  
+      - name: Build
+        run: dotnet build Contact --no-restore
+
+  unit_tests:
+    runs-on: ubuntu-latest
+    needs: dotnet_build
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.300
+
+      - name: Cache .NET packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/packages.config') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore dependencies
+        run: dotnet restore Contact
+
       - name: Run Unit Tests
-        run: cd Contact/Tests/Unit && dotnet test --filter Unit
-        
-  IntegrationTests:
-     runs-on: ubuntu-latest
-     needs: UnitTests
+        run: dotnet test Contact/Tests/Unit --filter Unit
 
-     steps:     
+  integration_tests:
+    runs-on: ubuntu-latest
+    needs: unit_tests
+    steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.300
-          
-      - name: Restore dependencies
-        run: cd Contact/ && dotnet restore
-        
+
       - name: Run Integration Tests
-        run: cd Contact/Tests/Integration && dotnet test --filter Integration
-        
-  KubernetesValidation:
-      runs-on: ubuntu-latest
-      needs: IntegrationTests
-  
-      steps:
+        run: dotnet test Contact/Tests/Integration --filter Integration
+
+  kubernetes_validation:
+    runs-on: ubuntu-latest
+    needs: [docker_build, integration_tests]
+    steps:
       - uses: actions/checkout@v4
 
-      - name: Build Docker Images
+      - name: Download Docker Images
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ matrix.image.name }}
+          path: ${{ matrix.image.name }}.tar
+
+      - name: Load Docker Images
         run: |
-          docker build -t contactcreateapiv1 -f APIs/CreateAPI/Dockerfile .
-          docker build -t contactdeleteapiv1 -f APIs/DeleteAPI/Dockerfile .
-          docker build -t contactreadapiv1 -f APIs/ReadAPI/Dockerfile .
-          docker build -t contactupdateapiv1 -f APIs/UpdateAPI/Dockerfile .
-          docker build -t createworker-tech3:latest -f ./Workers/CreateWorker/Dockerfile .
-          docker build -t deleteworker-tech3:latest -f ./Workers/DeleteWorker/Dockerfile . 
-          docker build -t updateworker-tech3:latest -f ./Workers/UpdateWorker/Dockerfile .
-  
+          docker load -i contactcreateapiv1.tar
+          docker load -i contactdeleteapiv1.tar
+          docker load -i contactreadapiv1.tar
+          docker load -i contactupdateapiv1.tar
+          docker load -i createworkerv1.tar
+          docker load -i deleteworkerv1.tar
+          docker load -i updateworkerv1.tar
+
       - name: Install Kind
         run: |
           curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.20.0/kind-linux-amd64
           chmod +x ./kind
           sudo mv ./kind /usr/local/bin/kind
-  
+
       - name: Create Kubernetes Cluster
-        run: kind create cluster --name contact-cluster
-  
+        run: kind create cluster --name contact-cluster --image kindest/node:v1.24.0
+
       - name: Load Docker Images into Kind
         run: |
           kind load docker-image contactcreateapiv1 --name contact-cluster
           kind load docker-image contactdeleteapiv1 --name contact-cluster
           kind load docker-image contactreadapiv1 --name contact-cluster
           kind load docker-image contactupdateapiv1 --name contact-cluster
-          kind load docker-image createworker-tech3:latest --name contact-cluster
-          kind load docker-image deleteworker-tech3:latest --name contact-cluster
-          kind load docker-image updateworker-tech3:latest --name contact-cluster
-  
+          kind load docker-image updateworkerv1:latest --name contact-cluster
+          kind load docker-image deleteworkerv1:latest --name contact-cluster
+          kind load docker-image updateworkerv1:latest --name contact-cluster
+
       - name: Apply Kubernetes Manifests
-        run: kubectl apply -R -f Contact/Pipelines/ .
-  
+        run: kubectl apply -R -f Contact/Pipelines/
+
       - name: Wait for Pods to be Ready
-        run: |
-          kubectl wait --for=condition=ready pod --all --timeout=120s
-          kubectl get pods -o wide
-  
+        run: kubectl wait --for=condition=ready pod --all --timeout=120s
+
       - name: Validate Application Health
         run: |
           kubectl get services
