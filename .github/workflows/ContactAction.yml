@@ -120,14 +120,14 @@ jobs:
 
   kubernetes_validation:
     runs-on: ubuntu-latest
-    needs: [docker_build]
+    needs: [docker_build, integration_tests]
     steps:
       - uses: actions/checkout@v4
 
       - name: Download Docker Images
         uses: actions/download-artifact@v3
         with:
-          name: contactcreateapiv1
+          name: ${{ matrix.name }}
           path: ./docker_images
 
       - name: Load Docker Images
