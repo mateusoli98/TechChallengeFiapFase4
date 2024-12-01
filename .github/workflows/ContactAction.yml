@@ -134,7 +134,7 @@ jobs:
           
       - name: List
         run: |
-          ls
+          ls ./Contact/docker_images/
       
       - name: Load Docker Images
         run: |
