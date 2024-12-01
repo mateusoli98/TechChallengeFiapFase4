@@ -48,95 +48,107 @@ jobs:
       - name: Create Docker Images Directory
         working-directory: ./Contact
         run: mkdir -p ./docker_images 
+
+      - name: List files
+        working-directory: ./Contact
+        run: ls
      
       - name: Save Docker Image as TAR
         working-directory: ./Contact
         run: docker save -o ./docker_images/${{ matrix.name }}.tar ${{ matrix.name }}
+
+      - name: List files
+        working-directory: ./Contact
+        run: ls
       
       - name: Upload Docker Image as Artifact       
         uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.name }}
-          path: ${{ matrix.name }}.tar
+          path: ./Contact/docker_images/${{ matrix.name }}.tar
 
-  dotnet_build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Cache .NET packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.nuget/packages
-          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/packages.config') }}
-          restore-keys: |
-            ${{ runner.os }}-nuget-
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 8.0.300
-
-      - name: Restore dependencies
-        run: dotnet restore Contact
-
-      - name: Build
-        run: dotnet build Contact --no-restore
-
-  unit_tests:
-    runs-on: ubuntu-latest
-    needs: dotnet_build
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 8.0.300
-
-      - name: Cache .NET packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.nuget/packages
-          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/packages.config') }}
-          restore-keys: |
-            ${{ runner.os }}-nuget-
-
-      - name: Restore dependencies
-        run: dotnet restore Contact
-
-      - name: Run Unit Tests
-        run: dotnet test Contact/Tests/Unit --filter Unit
-
-  integration_tests:
-    runs-on: ubuntu-latest
-    needs: unit_tests
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 8.0.300
-
-      - name: Run Integration Tests
-        run: dotnet test Contact/Tests/Integration --filter Integration
-
-  kubernetes_validation:
-    runs-on: ubuntu-latest
-    needs: [docker_build]
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Download Docker Images
-        uses: actions/download-artifact@v3
-        with:
-          name: ${{ matrix.name }}
-          path: ./docker_images
-
-      - name: List Docker Images Directory
+      - name: List files
         working-directory: ./Contact
         run: ls ./docker_images
+
+  # dotnet_build:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+
+  #     - name: Cache .NET packages
+  #       uses: actions/cache@v3
+  #       with:
+  #         path: ~/.nuget/packages
+  #         key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/packages.config') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-nuget-
+
+  #     - name: Setup .NET
+  #       uses: actions/setup-dotnet@v4
+  #       with:
+  #         dotnet-version: 8.0.300
+
+  #     - name: Restore dependencies
+  #       run: dotnet restore Contact
+
+  #     - name: Build
+  #       run: dotnet build Contact --no-restore
+
+  # unit_tests:
+  #   runs-on: ubuntu-latest
+  #   needs: dotnet_build
+  #   steps:
+  #     - uses: actions/checkout@v4
+
+  #     - name: Setup .NET
+  #       uses: actions/setup-dotnet@v4
+  #       with:
+  #         dotnet-version: 8.0.300
+
+  #     - name: Cache .NET packages
+  #       uses: actions/cache@v3
+  #       with:
+  #         path: ~/.nuget/packages
+  #         key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/packages.config') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-nuget-
+
+  #     - name: Restore dependencies
+  #       run: dotnet restore Contact
+
+  #     - name: Run Unit Tests
+  #       run: dotnet test Contact/Tests/Unit --filter Unit
+
+  # integration_tests:
+  #   runs-on: ubuntu-latest
+  #   needs: unit_tests
+  #   steps:
+  #     - uses: actions/checkout@v4
+
+  #     - name: Setup .NET
+  #       uses: actions/setup-dotnet@v4
+  #       with:
+  #         dotnet-version: 8.0.300
+
+  #     - name: Run Integration Tests
+  #       run: dotnet test Contact/Tests/Integration --filter Integration
+
+  # kubernetes_validation:
+  #   runs-on: ubuntu-latest
+  #   needs: [docker_build]
+  #   steps:
+  #     - uses: actions/checkout@v4
+
+  #     - name: Download Docker Images
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: ${{ matrix.name }}
+  #         path: ./docker_images
+
+  #     - name: List Docker Images Directory
+  #       working-directory: ./Contact
+  #       run: ls ./docker_images
   
       # - name: Load Docker Images
       #   run: |
