@@ -54,8 +54,8 @@ jobs:
       - name: Upload Docker Image as Artifact       
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ matrix.name }}
-          path: ./Contact/docker_images/${{ matrix.name }}.tar
+          name: docker_images
+          path: ./Contact/docker_images/*.tar 
 
   # dotnet_build:
   #   runs-on: ubuntu-latest
@@ -131,10 +131,6 @@ jobs:
         with:
           name: docker_images 
           path: ./Contact/docker_images 
-          
-      - name: List
-        run: |
-          ls ./Contact/docker_images/
       
       - name: Load Docker Images
         run: |
