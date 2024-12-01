@@ -46,9 +46,11 @@ jobs:
         run: docker build -t ${{ matrix.name }} -f ${{ matrix.dockerfile }} .
       
       - name: Create Docker Images Directory
+        working-directory: ./Contact
         run: mkdir -p ./docker_images 
      
       - name: Save Docker Image as TAR
+        working-directory: ./Contact
         run: docker save -o ./docker_images/${{ matrix.name }}.tar ${{ matrix.name }}
       
       - name: Upload Docker Image as Artifact       
@@ -133,6 +135,7 @@ jobs:
           path: ./docker_images
 
       - name: List Docker Images Directory
+        working-directory: ./Contact
         run: ls ./docker_images
   
       # - name: Load Docker Images
