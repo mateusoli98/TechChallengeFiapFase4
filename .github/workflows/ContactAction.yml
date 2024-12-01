@@ -51,9 +51,6 @@ jobs:
       - name: Save Docker Image as TAR
         run: docker save ${{ matrix.name }} > ./Contact/docker_images/${{ matrix.name }}.tar
 
-      - name: Debug Directory Content
-        run: ls -lh ./Contact/docker_images
-
       - name: Upload Docker Image as Artifact       
         uses: actions/upload-artifact@v3
         with:
@@ -134,7 +131,11 @@ jobs:
         with:
           name: ${{ matrix.name }}
           path: ./Contact/docker_images
-     
+          
+      - name: List
+        run: |
+          ls
+      
       - name: Load Docker Images
         run: |
           docker load -i ./Contact/docker_images/contactdeleteapiv1.tar
