@@ -130,6 +130,10 @@ jobs:
           name: ${{ matrix.name }}
           path: ./docker_images
 
+      - name: List Docker Images
+        run: |
+          ls -l ./docker_images
+
       - name: Load Docker Images
         run: |
           docker load -i ./docker_images/contactcreateapiv1.tar
