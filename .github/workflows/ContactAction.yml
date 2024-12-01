@@ -26,19 +26,19 @@ jobs:
           - name: updateworkerv1
             dockerfile: Workers/UpdateWorker/Dockerfile
 
-  runs-on: ubuntu-latest
-  steps:
-    - uses: actions/checkout@v4
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-    - name: Build Docker Image
-      run: docker build -t ${{ matrix.name }} -f ${{ matrix.dockerfile }} .
+      - name: Build Docker Image
+        run: docker build -t ${{ matrix.name }} -f ${{ matrix.dockerfile }} .
 
-    - name: Save Docker Image as Artifact
-      run: docker save -o ${{ matrix.name }}.tar ${{ matrix.name }}
-      uses: actions/upload-artifact@v3
-      with:
-        name: ${{ matrix.name }}
-        path: ${{ matrix.name }}.tar
+      - name: Save Docker Image as Artifact
+        run: docker save -o ${{ matrix.name }}.tar ${{ matrix.name }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.name }}
+          path: ${{ matrix.name }}.tar
 
   dotnet_build:
     runs-on: ubuntu-latest
