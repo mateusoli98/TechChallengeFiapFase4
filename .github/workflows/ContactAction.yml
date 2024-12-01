@@ -132,14 +132,12 @@ jobs:
           name: ${{ matrix.name }}
           path: ./Contact/docker_images
      
-      - name:  List Docker Images
-        run: ls -al ./Contact/docker_images/
-        
-      # - name: Load Docker Images 
-      #   working-directory: ./Contact/docker_images/
-      #   run: |
-      #     docker load -i contactdeleteapiv1.tar
-      #     docker load -i ./Contact/docker_images/contactdeleteapiv1.tar
+      - name: Rename Docker Image File
+        run: mv ./Contact/docker_images/${{ matrix.name }} ./Contact/docker_images/${{ matrix.name }}.tar
+         
+      - name: Load Docker Images
+        run: |
+          docker load -i ./Contact/docker_images/contactdeleteapiv1.tar
       #     docker load -i ./Contact/docker_images/contactreadapiv1.tar
       #     docker load -i ./Contact/docker_images/contactupdateapiv1.tar
       #     docker load -i ./Contact/docker_images/updateworkerv1.tar
