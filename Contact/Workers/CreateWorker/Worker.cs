@@ -12,11 +12,10 @@ namespace CreateWorker
     {
         private readonly ICreateContactProcessingUseCase _useCase = usecase;
         private readonly IRabbitMqProducerService _rabbitMqProducerService = rabbitMqProducerService;
-        private IModel _channel;
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            (_, _channel) = _rabbitMqProducerService.GetConnectionAndChannel();
+            (_, var _channel) = _rabbitMqProducerService.GetConnectionAndChannel();
             _rabbitMqProducerService.DeclareQueue("create_contact");
 
             var consumer = new EventingBasicConsumer(_channel);
@@ -25,13 +24,10 @@ namespace CreateWorker
                 var body = ea.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
 
-                var contact = JsonSerializer.Deserialize<Contact>(message);
-                Console.WriteLine($"Iniciando processamento do usuário '{contact.Id}'");
+                var contact = JsonSerializer.Deserialize<Contact>(message) ?? throw new Exception("Erro ao deserializar mensagem");
 
-                if (contact != null)
-                {
-                    _useCase.Execute(contact);
-                }
+                Console.WriteLine($"Iniciando processamento do usuário '{contact?.Id}'");
+                _useCase.Execute(contact!);
             };
 
             _channel.BasicConsume(queue: "create_contact", autoAck: true, consumer: consumer);

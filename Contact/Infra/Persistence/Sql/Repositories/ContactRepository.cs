@@ -8,14 +8,9 @@ using Domain.Entities;
 
 namespace Infra.Persistence.Sql.Repositories;
 
-public class ContactRepository : IContactRepository
+public class ContactRepository(IServiceScopeFactory scopeFactory) : IContactRepository
 {    
-    private DataContext _dataContext;
-
-    public ContactRepository(IServiceScopeFactory scopeFactory)
-    {
-        _dataContext = scopeFactory.CreateScope().ServiceProvider.GetRequiredService<DataContext>();
-    }
+    private readonly DataContext _dataContext = scopeFactory.CreateScope().ServiceProvider.GetRequiredService<DataContext>();
 
     public async Task DeleteAsync(Contact contact, CancellationToken cancellationToken = default)
     {

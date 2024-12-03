@@ -5,6 +5,7 @@ using Infra.Persistence.Sql.Repositories;
 using Integration.Context;
 using Microsoft.Extensions.DependencyInjection;
 using Shared.Builders;
+using Xunit;
 
 namespace Integration.Repositories;
 

@@ -19,7 +19,7 @@ public class BaseController : ControllerBase
                 return NotFound();
             }
 
-            return Error(result.Errors.ToString(), HttpStatusCode.BadRequest);
+            return Error(string.Concat(result.Errors.Select(e => $"{e.Description}, ")), HttpStatusCode.BadRequest);
         }
 
         return Ok(result.Value);

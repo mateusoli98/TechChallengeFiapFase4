@@ -11,7 +11,6 @@ namespace DeleteWorker;
 
 public class Worker(
     //ILogger<Worker> logger,
-    IServiceScopeFactory scopeFactory,
     IDeleteContactProcessingUseCase deleteContactUsecase,
     IDeleteContactPermanentlyProcessingUseCase deleteContactPermanentlyProcessingUsecase,
     IRabbitMqProducerService rabbitMqProducerService) : IHostedService
@@ -20,11 +19,10 @@ public class Worker(
     private readonly IDeleteContactProcessingUseCase _deleteContactProcessingUseCase = deleteContactUsecase;
     private readonly IDeleteContactPermanentlyProcessingUseCase _deleteContactPermanentlyUsecase = deleteContactPermanentlyProcessingUsecase;
     private readonly IRabbitMqProducerService _rabbitMqProducerService = rabbitMqProducerService;
-    private IModel _channel;
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        (_, _channel) = _rabbitMqProducerService.GetConnectionAndChannel();
+        (_, var _channel) = _rabbitMqProducerService.GetConnectionAndChannel();
         _rabbitMqProducerService.DeclareQueue("delete_contact");
         _rabbitMqProducerService.DeclareQueue("delete_permanently_contact");
 

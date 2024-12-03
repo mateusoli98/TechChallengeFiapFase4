@@ -5,11 +5,9 @@ namespace Application.UseCases.DeleteContactPermanently;
 
 public class DeleteContactPermanentlyProcessingUseCase(IContactRepository contactRepository) : IDeleteContactPermanentlyProcessingUseCase
 {
-    private readonly IContactRepository _contactRepository = contactRepository;
-
     public async Task Execute(string id, CancellationToken cancellationToken)
     {
-        var contact = await _contactRepository.GetByIdAsync(id, cancellationToken);
+        var contact = await contactRepository.GetByIdAsync(id, cancellationToken);
 
         if (contact is not null)
         {

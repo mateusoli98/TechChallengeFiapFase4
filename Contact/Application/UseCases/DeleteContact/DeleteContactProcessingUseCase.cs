@@ -6,11 +6,9 @@ namespace Application.UseCases.DeleteContact;
 
 public class DeleteContactProcessingUseCase(IContactRepository contactRepository) : IDeleteContactProcessingUseCase
 {
-    private readonly IContactRepository _contactRepository = contactRepository;
-
     public async Task<Error?> Execute(string id, CancellationToken cancellationToken = default)
     {
-        var contact = await _contactRepository.GetByIdAsync(id, cancellationToken);
+        var contact = await contactRepository.GetByIdAsync(id, cancellationToken);
 
         if (contact is not null)
         {
