@@ -20,21 +20,24 @@ spec:
           image: contactdeleteapiv1:latest
           imagePullPolicy: Never
           envFrom:
-              - secretRef:
-                  name: database-secrets
-              - secretRef:
-                  name: rabbitmq-secrets
-              - configMapRef:
-                  name: config-rabbitmq
-              - configMapRef:
-                  name: config-database
+            - secretRef:
+                name: database-secrets
+            - secretRef:
+                name: rabbitmq-secrets
+            - configMapRef:
+                name: config-rabbitmq
+            - configMapRef:
+                name: config-database
           env:
-              - name: ASPNETCORE_URLS
-                value: http://*:8082
+            - name: ASPNETCORE_URLS
+              value: http://*:8082
           resources:
-            limits:
-              memory: "128Mi"
+            requests:
               cpu: "500m"
+              memory: "128Mi"
+            limits:
+              cpu: "1000m"
+              memory: "256Mi"
           ports:
             - containerPort: 8082
   selector:

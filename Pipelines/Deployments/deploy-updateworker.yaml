@@ -31,8 +31,11 @@ spec:
             - name: ASPNETCORE_URLS
               value: http://*:8087
         resources:
-          limits:
-            memory: "128Mi"
+          requests:
             cpu: "500m"
+            memory: "128Mi"
+          limits:
+            cpu: "1000m"
+            memory: "256Mi"
         ports:
         - containerPort: 8087
