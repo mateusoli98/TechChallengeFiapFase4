@@ -8,7 +8,7 @@
 
 ## Vídeo de apresentação (entrega)
 
-- [Clique aqui]()
+- [Clique aqui](https://www.youtube.com/watch?v=l8v3Noj3bZ8)
 
 ## Requisitos Funcionais
 
